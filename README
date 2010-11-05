@@ -1,0 +1,110 @@
+README for gscanbus 0.7.1
+
+Andreas Micklei <andreas.micklei@ivistar.de>
+18.11.1999 - 11.07.2001
+
+What is this?
+~~~~~~~~~~~~~
+
+gscanbus is a little bus scanning, testing and topology visualizing tool for
+the Linux IEEE1394 subsystem, with some AV/C support, especially for
+controlling Camcorders and VCRs. It is intended as a debugging tool in
+IEEE1394 development, but can also be used to simply check your IEEE1394 setup
+on Linux.
+
+Prerequisites
+~~~~~~~~~~~~~
+
+* Obviously a working IEEE1394 subsystem.
+  The version included with Linux kernel 2.4.4 and up works fine (I use 2.4.6
+  currently). Other versions might work as well, but this is untested. If you
+  experience problems you are always encouraged to try out the latest version
+  of the Linux 1394 subsystem before reporting bugs to me.
+
+* libraw1394 0.9 or at least a CVS version of libraw1394 from late January
+  2001 or newer.
+
+* GTK+ 1.2.0 or newer.
+
+* And of course gcc, make, etc. to compile.
+
+How to compile
+~~~~~~~~~~~~~~
+
+./configure
+make
+make install (optionally)
+
+The installation process will install the two data files "guid-resolv.conf"
+and "oui-resolv.conf" into /etc. This directory is not configurable at the
+moment, but you can also run gscanbus from within the build directory without
+installation, because those two files are first looked for in the current
+directory.
+
+This is my first shot at autoconf/automake, so be gentle with me. If the
+build process fails, please send me a bug report, or even better send me some
+nice examples of how to do it the right way. ;-)
+
+Usage
+~~~~~
+
+./gscanbus
+(or just gscanbus when you did make install)
+
+Try clicking on some nodes to get additional information.
+
+Click on a DVCR or DV-Camcorder to get the control buttons.
+
+Do some transactions via the menu bar.
+
+To get some useful debugging output on the console use the option
+-v <debugging level>. "./gscanbus -v3" will give you the most verbose
+debugging info.
+
+That's all.
+
+Bugs
+~~~~
+
+gscanbus sometimes crashes when doing a bus reset. Sorry, but I will
+investigate this issue when I get the time.
+
+Troubelshooting
+~~~~~~~~~~~~~~~
+
+If gscanbus aborts with the error message
+" error in loading shared libraries: libraw1394.so.2: can't open shared
+  object file: No such file or directory "
+try one of the following:
+
+1. export LD_LIBRARY_PATH=/usr/local/lib
+   (or wherever you installed libraw1394)
+
+2. add the line /usr/local/lib to the file /etc/ld.so.conf and run 
+   "/sbin/ldconfig -v"
+
+The first solution works only in the current shell, while the second solutions
+solves the problem system wide once and for all. Do not forget to run ldconfig
+whenever you install new libraries (it's best to run it automatically at
+boot-time).
+
+If you still have problems feel free to contact me via email. I mean it!
+
+A word about guid-resolv.conf
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The configuration file guid-resolv.conf is a quick-hack to give your devices
+sane names in the main window of gscanbus. However the GUID of a device is
+Globally Unique (as the name "Global Unique ID" suggests). So feel free to
+stick your GUIDs into you config file, but don't mail them to me. It would be
+of no use to stick them in the example guid-resolv.conf that is shipped with
+gscanbus.
+
+Updates
+~~~~~~~
+
+The newest version of gscanbus (as well as older versions) should always be
+available at the following URL:
+
+http://www.ivistar.de/0500opensource.php3?lang=en
+

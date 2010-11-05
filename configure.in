@@ -1,0 +1,39 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(gscanbus.c)
+AM_INIT_AUTOMAKE(gscanbus, 0.7.1)
+dnl AM_CONFIG_HEADER(config.h)
+
+dnl Checks for programs.
+AC_PROG_CC
+AC_PROG_INSTALL
+
+dnl Checks for libraries.
+dnl Replace `main' with a function in -lbfd:
+dnl AC_CHECK_LIB(bfd, main)
+dnl Replace `main' with a function in -lefence:
+dnl AC_CHECK_LIB(efence, main)
+dnl Replace `main' with a function in -lelf:
+dnl AC_CHECK_LIB(elf, main)
+dnl Replace `main' with a function in -liberty:
+dnl AC_CHECK_LIB(iberty, main)
+dnl Replace `main' with a function in -libs:
+dnl AC_CHECK_LIB(ibs, main)
+dnl Replace `main' with a function in -lmpatrol:
+dnl AC_CHECK_LIB(mpatrol, main)
+AC_CHECK_LIB(raw1394, raw1394_new_handle,,AC_MSG_ERROR(need libraw1394 from 18.01.2001 or newer))
+dnl AC_LIB_RAW1394(0.9,,AC_MSG_ERROR(gscanbus needs LIBRAW1394 >= 0.9))dnl
+dnl AC_LIB_RAW1394(0.9)dnl
+dnl AC_LIB_RAW1394_HEADERS(AC_MSG_ERROR(YOYOYO))dnl
+AM_PATH_GTK(1.2.0,,AC_MSG_ERROR(gscanbus needs GTK))dnl
+
+dnl Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS(sys/time.h unistd.h libraw1394/raw1394.h )
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_TYPE_SIZE_T
+
+dnl Checks for library functions.
+
+AC_OUTPUT(Makefile)
