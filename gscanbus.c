@@ -110,12 +110,12 @@ int repaintCountdown = 0;
 static GdkPixmap *pixmap = NULL;
 
 const char not_compatible[] = "\
-This libraw1394 does not work with your version of Linux. You need a different
-version that matches your kernel (see kernel help text for the raw1394 option to
+This libraw1394 does not work with your version of Linux. You need a different\
+version that matches your kernel (see kernel help text for the raw1394 option to\
 find out which is the correct version).\n";
 
 const char not_loaded[] = "\
-This probably means that you don't have raw1394 support in the kernel or that
+This probably means that you don't have raw1394 support in the kernel or that\
 you haven't loaded the raw1394 module.\n";
 
 /*---------------------------------------------------------------------------
@@ -294,12 +294,12 @@ void drawTopologyTree(GdkDrawable *drawable, GdkWindow *window, GdkGC *gc,
 	/* Draw icon */
 	gdk_gc_set_foreground(gc, &gc_values.foreground);
 
-	gdk_window_get_size(xpm_node, &xpmwidth, &xpmheight);
+	gdk_drawable_get_size(GDK_DRAWABLE(xpm_node), &xpmwidth, &xpmheight);
 
 	gdk_gc_set_clip_origin(gc, left + (width/2 - xpmwidth/2),
 		level*nodeheight*2 + (nodeheight-xpmheight)/2);
 	gdk_gc_set_clip_mask(gc, xpm_node_mask);
-	gdk_draw_pixmap(drawable, gc, xpm_node, 0, 0,
+	gdk_draw_drawable(drawable, gc, xpm_node, 0, 0,
 		left + (width/2 - xpmwidth/2),
 		level*nodeheight*2 + (nodeheight-xpmheight)/2,
 		xpmwidth, xpmheight);
@@ -435,9 +435,9 @@ TopologyTree *detectClick(TopologyTree *node, int left, int width, int level,
  * RESULT:	always FALSE
  */
 static gint expose_event(GtkWidget *widget, GdkEventExpose *event) {
-	gdk_draw_pixmap(widget->window,
+	gdk_draw_drawable(widget->window,
 		widget->style->fg_gc[GTK_WIDGET_STATE(widget)],
-		pixmap,
+		GDK_DRAWABLE(pixmap),
 		event->area.x, event->area.y,
 		event->area.x, event->area.y,
 		event->area.width, event->area.height);
@@ -453,7 +453,7 @@ static gint expose_event(GtkWidget *widget, GdkEventExpose *event) {
  */
 static gint configure_event(GtkWidget *widget, GdkEventConfigure *event) {
 	if (pixmap) {
-		gdk_pixmap_unref(pixmap);
+		g_object_unref(pixmap);
 	}
 
 	pixmap = gdk_pixmap_new(widget->window,
@@ -725,43 +725,43 @@ GtkWidget *make_avc_buttons(TopologyTree *node) {
 	hbox2 = gtk_hbox_new(TRUE, 0);
 	hbox3 = gtk_hbox_new(FALSE, 0);
 	button = gtk_button_new_with_label("<<");
-	gtk_signal_connect(GTK_OBJECT(button), "clicked",
+	g_signal_connect(GTK_OBJECT(button), "clicked",
 		GTK_SIGNAL_FUNC(avc_rewind), node);
 	gtk_widget_show(button);
 	//gtk_table_attach_defaults(GTK_TABLE(table), button, 1, 3, 0, 1);
 	gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 0);
 	button = gtk_button_new_with_label("PLAY");
-	gtk_signal_connect(GTK_OBJECT(button), "clicked",
+	g_signal_connect(GTK_OBJECT(button), "clicked",
 		GTK_SIGNAL_FUNC(avc_play), node);
 	gtk_widget_show(button);
 	//gtk_table_attach_defaults(GTK_TABLE(table), button, 3, 5, 0, 1);
 	gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 0);
 	button = gtk_button_new_with_label(">>");
-	gtk_signal_connect(GTK_OBJECT(button), "clicked",
+	g_signal_connect(GTK_OBJECT(button), "clicked",
 		GTK_SIGNAL_FUNC(avc_forward), node);
 	gtk_widget_show(button);
 	//gtk_table_attach_defaults(GTK_TABLE(table), button, 5, 7, 0, 1);
 	gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 0);
 	button = gtk_button_new_with_label("STOP");
-	gtk_signal_connect(GTK_OBJECT(button), "clicked",
+	g_signal_connect(GTK_OBJECT(button), "clicked",
 		GTK_SIGNAL_FUNC(avc_stop), node);
 	gtk_widget_show(button);
 	//gtk_table_attach_defaults(GTK_TABLE(table), button, 0, 2, 1, 2);
 	gtk_box_pack_start(GTK_BOX(hbox2), button, TRUE, TRUE, 0);
 	button = gtk_button_new_with_label("||");
-	gtk_signal_connect(GTK_OBJECT(button), "clicked",
+	g_signal_connect(GTK_OBJECT(button), "clicked",
 		GTK_SIGNAL_FUNC(avc_pause), node);
 	gtk_widget_show(button);
 	//gtk_table_attach_defaults(GTK_TABLE(table), button, 2, 4, 1, 2);
 	gtk_box_pack_start(GTK_BOX(hbox2), button, TRUE, TRUE, 0);
 	button = gtk_button_new_with_label("Eject");
-	gtk_signal_connect(GTK_OBJECT(button), "clicked",
+	g_signal_connect(GTK_OBJECT(button), "clicked",
 		GTK_SIGNAL_FUNC(avc_eject), node);
 	gtk_widget_show(button);
 	//gtk_table_attach_defaults(GTK_TABLE(table), button, 4, 6, 1, 2);
 	gtk_box_pack_start(GTK_BOX(hbox2), button, TRUE, TRUE, 0);
 	button = gtk_button_new_with_label("Record");
-	gtk_signal_connect(GTK_OBJECT(button), "clicked",
+	g_signal_connect(GTK_OBJECT(button), "clicked",
 		GTK_SIGNAL_FUNC(avc_record), node);
 	gtk_widget_show(button);
 	//gtk_table_attach_defaults(GTK_TABLE(table), button, 6, 8, 1, 2);
@@ -772,8 +772,8 @@ GtkWidget *make_avc_buttons(TopologyTree *node) {
 	label = gtk_label_new("Status: ");
 	gtk_widget_show(label);
 	entry = gtk_entry_new();
-	gtk_entry_set_editable(GTK_ENTRY(entry), FALSE);
-	//gtk_signal_connect(GTK_OBJECT(button), "clicked",
+	gtk_editable_set_editable(GTK_EDITABLE(entry), FALSE);
+	//g_signal_connect(GTK_OBJECT(button), "clicked",
 		//GTK_SIGNAL_FUNC(avc_record), node);
 	gtk_widget_show(entry);
 	//gtk_table_attach_defaults(GTK_TABLE(table), button, 6, 8, 1, 2);
@@ -792,7 +792,7 @@ GtkWidget *make_avc_buttons(TopologyTree *node) {
 	status_entry->node = node;
 	status_entry->entry = entry;
 
-	gtk_timeout_add(500, update_avc_status, status_entry);
+	g_timeout_add(500, update_avc_status, status_entry);
 
 	return vbox;
 }
@@ -858,16 +858,15 @@ void append_subunit_strings(char *buf, quadlet_t table[8]) {
  * IN:		node: The node to display information about
  */
 void popup_nodeinfo(TopologyTree *node) {
-	GtkWidget *button, *dialog_window, *hbox, *text, *scrollbar;
-	//char s[1000];	/* FIXME */
-	char s[10000];	/* FIXME */
+	GtkWidget *button, *dialog_window, *hbox, *text, *sw;
+	char *s;
 	char textualleafes[MAXTEXTLEAFCHARS];
 	int nchars, nleafes, i;
 	quadlet_t table[8];
 	char avcstring[MAXAVCSTRINGCHARS];
 
 	dialog_window = gtk_dialog_new();
-	gtk_signal_connect(GTK_OBJECT(dialog_window), "destroy",
+	g_signal_connect(GTK_OBJECT(dialog_window), "destroy",
 		GTK_SIGNAL_FUNC(ClosingDialog),
 		&dialog_window);
 	if (node->label != NULL && node->label[0] != '\0') {
@@ -875,7 +874,7 @@ void popup_nodeinfo(TopologyTree *node) {
 		node->label);
 	} else
 		gtk_window_set_title(GTK_WINDOW(dialog_window), "Node Info");
-	gtk_container_border_width(GTK_CONTAINER(dialog_window), 5);
+	gtk_container_set_border_width(GTK_CONTAINER(dialog_window), 5);
 	/*gtk_window_set_default_size(GTK_WINDOW(dialog_window), 300, 250);*/
 	gtk_window_set_default_size(GTK_WINDOW(dialog_window), 300, 300);
 
@@ -905,7 +904,7 @@ void popup_nodeinfo(TopologyTree *node) {
 	DEBUG_GENERAL fprintf(stderr,"Got AVC subunit info\n");
 
 	//sprintf(s, "SelfID Info\n-----------\nPhysical ID: %i\nLink active: %s\nGap Count: %i\nPHY Speed: %s\nPHY Delay: %s\nIRM Capable: %s\nPower Class: %s\nPort 0: %s\nPort 1: %s\nPort 2: %s\nInit. reset: %s\n\nCSR ROM Info\n------------\nGUID: 0x%08X%08X\nNode Capabilities: 0x%08X\nVendor ID: 0x%08X\nUnit Spec ID: 0x%08X\nUnit SW Version: 0x%08X\nModel ID: 0x%08X\nNr. Textual Leafes: %i\n\nTextual Leafes: %s\n\nAV/C Subunits\n-------------\n%s",
-	sprintf(s, "SelfID Info\n-----------\nPhysical ID: %i\nLink active: %s\nGap Count: %i\nPHY Speed: %s\nPHY Delay: %s\nIRM Capable: %s\nPower Class: %s\n%sInit. reset: %s\n\nCSR ROM Info\n------------\nGUID: 0x%08X%08X\nNode Capabilities: 0x%08X\nVendor ID: 0x%08X\nUnit Spec ID: 0x%08X\nUnit SW Version: 0x%08X\nModel ID: 0x%08X\nNr. Textual Leafes: %i\n\nVendor: %s\nTextual Leafes: %s\n\nAV/C Subunits\n-------------\n%s",
+	s = g_strdup_printf("SelfID Info\n-----------\nPhysical ID: %i\nLink active: %s\nGap Count: %i\nPHY Speed: %s\nPHY Delay: %s\nIRM Capable: %s\nPower Class: %s\n%sInit. reset: %s\n\nCSR ROM Info\n------------\nGUID: 0x%08X%08X\nNode Capabilities: 0x%08X\nVendor ID: 0x%08X\nUnit Spec ID: 0x%08X\nUnit SW Version: 0x%08X\nModel ID: 0x%08X\nNr. Textual Leafes: %i\n\nVendor: %s\nTextual Leafes: %s\n\nAV/C Subunits\n-------------\n%s",
 		node->selfid[0].packetZero.phyID,
 		yes_no(node->selfid[0].packetZero.linkActive),
 		node->selfid[0].packetZero.gapCount,
@@ -929,21 +928,16 @@ void popup_nodeinfo(TopologyTree *node) {
 		textualleafes,
 		avcstring);
 
-	text = gtk_text_new(NULL, NULL);
-	gtk_text_set_editable(GTK_TEXT(text), FALSE);
-	gtk_text_insert(GTK_TEXT(text), NULL, NULL, NULL, s, strlen(s));
-	gtk_widget_show(text);
+	text = gtk_text_view_new();
+	gtk_text_view_set_editable(GTK_TEXT_VIEW(text), FALSE);
+	gtk_text_buffer_insert_at_cursor(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)), s, -1);
+	g_free(s);
 
-	scrollbar = gtk_vscrollbar_new(GTK_TEXT(text)->vadj);
-	gtk_widget_show(scrollbar);
-
-	hbox = gtk_hbox_new(FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(hbox), text, TRUE, TRUE, 0);
-	gtk_box_pack_start(GTK_BOX(hbox), scrollbar, FALSE, FALSE, 0);
-	gtk_widget_show(hbox);
+	sw = gtk_scrolled_window_new(NULL, NULL);
+	gtk_container_add(GTK_CONTAINER(sw), text);
 
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog_window)->vbox),
-		hbox, TRUE, TRUE, 0);
+		sw, TRUE, TRUE, 0);
 
 	if (get_node_type(&node->rom_info) == NODE_TYPE_AVC) {
 		gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog_window)->vbox),
@@ -951,7 +945,7 @@ void popup_nodeinfo(TopologyTree *node) {
 	}
 
 	button = gtk_button_new_with_label("OK");
-	gtk_signal_connect(GTK_OBJECT(button), "clicked",
+	g_signal_connect(GTK_OBJECT(button), "clicked",
 		GTK_SIGNAL_FUNC(CloseDialog),
 		dialog_window);
 	GTK_WIDGET_SET_FLAGS(button, GTK_CAN_DEFAULT);
@@ -960,7 +954,7 @@ void popup_nodeinfo(TopologyTree *node) {
 	gtk_widget_grab_default(button);
 	gtk_widget_show(button);
 
-	gtk_widget_show(dialog_window);
+	gtk_widget_show_all(dialog_window);
 }
 
 /*
@@ -979,20 +973,13 @@ static gint button_press_event(GtkWidget *widget, GdkEventButton *event) {
 		x = event->x;
 		y = event->y;
 		state = event->state;
-		gdk_window_get_size(event->window, &width, &height);
+		gdk_drawable_get_size(GDK_DRAWABLE(event->window), &width, &height);
 		node = detectClick(topologyTree, 0, width, 0, x, y);
 		if (node != NULL) {
 			popup_nodeinfo(node);
 		}
 	}
 	return TRUE;
-}
-
-/*
- * Called when the application exits. All cleanup code should go here.
- */
-void quit () {
-	gtk_exit (0);
 }
 
 /*
@@ -1037,13 +1024,13 @@ GtkWidget *makeDrawingArea(int x, int y) {
 	GtkWidget *drawing_area;
 
 	drawing_area = gtk_drawing_area_new ();
-	gtk_drawing_area_size (GTK_DRAWING_AREA (drawing_area), x, y);
+	gtk_widget_set_size_request(GTK_WIDGET(drawing_area), x, y);
 	gtk_widget_show (drawing_area);
-	gtk_signal_connect (GTK_OBJECT (drawing_area), "expose_event",
+	g_signal_connect (GTK_OBJECT (drawing_area), "expose_event",
 		GTK_SIGNAL_FUNC (expose_event), NULL);
-	gtk_signal_connect (GTK_OBJECT (drawing_area), "configure_event",
+	g_signal_connect (GTK_OBJECT (drawing_area), "configure_event",
 		GTK_SIGNAL_FUNC (configure_event), NULL);
-	gtk_signal_connect (GTK_OBJECT (drawing_area), "button_press_event",
+	g_signal_connect (GTK_OBJECT (drawing_area), "button_press_event",
 		GTK_SIGNAL_FUNC (button_press_event), NULL);
 	gtk_widget_set_events(drawing_area, GDK_EXPOSURE_MASK
 		| GDK_LEAVE_NOTIFY_MASK
@@ -1115,9 +1102,8 @@ int main (int argc, char *argv[])
 	window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	vbox = gtk_vbox_new (FALSE, 0);
 	gtk_container_add (GTK_CONTAINER (window), vbox);
-	gtk_widget_show (vbox);
-	gtk_signal_connect (GTK_OBJECT (window), "destroy",
-		GTK_SIGNAL_FUNC (quit), NULL);
+	g_signal_connect (GTK_OBJECT (window), "destroy",
+		GTK_SIGNAL_FUNC (gtk_main_quit), NULL);
 
 	menu_bar = makeMenuBar(window);
 	drawing_area = makeDrawingArea(640, 480);
@@ -1125,10 +1111,9 @@ int main (int argc, char *argv[])
 	gtk_box_pack_start (GTK_BOX (vbox), menu_bar, FALSE, FALSE, 0);
 	gtk_box_pack_start (GTK_BOX (vbox), drawing_area, TRUE, TRUE, 0);
 
-	gtk_widget_show (window);
+	gtk_widget_show_all (window);
 	Repaint((gpointer) drawing_area);
-	gtk_timeout_add(100, dummy_read, NULL);
-	//gtk_idle_add( dummy_read, NULL );
+	g_timeout_add(100, dummy_read, NULL);
 
 	gtk_main ();	/* Should never return */
 

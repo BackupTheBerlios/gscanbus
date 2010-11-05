@@ -23,8 +23,6 @@
 #include <string.h>		// strlen()
 #include "menues.h"
 
-extern void quit(void);		// From gscanbus.c
-
 extern raw1394handle_t handle;	// From gscanbus.c
 
 /*
@@ -65,11 +63,11 @@ static void aboutApp(gpointer callback_data, guint callback_action,
 	char *s = "\nwritten 11.07.2001 by Andreas Micklei\n\nMany ideas taken from gnome1394\nby Emanuel Pirker\n\nContributors:\nJim Harkins (ASCII dump, compilation fixes)\nManfred Weihs (Major bugfixes)\nSimon Vogl (endianess fixes)\nMark Knecht (bug reports)\nPK Chen of VIA Technologies, Inc (hardware)";
 
 	dialog_window = gtk_dialog_new();
-	gtk_signal_connect(GTK_OBJECT(dialog_window), "destroy",
+	g_signal_connect(GTK_OBJECT(dialog_window), "destroy",
 		GTK_SIGNAL_FUNC(ClosingDialog),
 		&dialog_window);
 	gtk_window_set_title(GTK_WINDOW(dialog_window), "About");
-	gtk_container_border_width(GTK_CONTAINER(dialog_window), 5);
+	gtk_container_set_border_width(GTK_CONTAINER(dialog_window), 5);
 	gtk_window_set_default_size(GTK_WINDOW(dialog_window), 300, 200);
 
 	headline = gtk_label_new(sheadline);
@@ -86,7 +84,7 @@ static void aboutApp(gpointer callback_data, guint callback_action,
 		text, TRUE, TRUE, 0);
 
 	button = gtk_button_new_with_label("OK");
-	gtk_signal_connect(GTK_OBJECT(button), "clicked",
+	g_signal_connect(GTK_OBJECT(button), "clicked",
 		GTK_SIGNAL_FUNC(CloseDialog),
 		dialog_window);
 	GTK_WIDGET_SET_FLAGS(button, GTK_CAN_DEFAULT);
@@ -98,23 +96,15 @@ static void aboutApp(gpointer callback_data, guint callback_action,
 	gtk_widget_show(dialog_window);
 }
 
-/*
- * Callback for the quit menu item from the menu bar.
- */
-static void quitApp(gpointer callback_data, guint callback_action,
-	GtkWidget *widget) {
-	quit();
-}
-
 GtkWidget *makeDialogWindow(char *title) {
 	GtkWidget *dialog_window;
 
 	dialog_window = gtk_dialog_new();
-	gtk_signal_connect(GTK_OBJECT(dialog_window), "destroy",
+	g_signal_connect(GTK_OBJECT(dialog_window), "destroy",
 		GTK_SIGNAL_FUNC(ClosingDialog),
 		&dialog_window);
 	gtk_window_set_title(GTK_WINDOW(dialog_window), title);
-	gtk_container_border_width(GTK_CONTAINER(dialog_window), 5);
+	gtk_container_set_border_width(GTK_CONTAINER(dialog_window), 5);
 	gtk_window_set_default_size(GTK_WINDOW(dialog_window), 300, 200);
 	return dialog_window;
 }
@@ -126,11 +116,11 @@ TransactionDialog *makeTransactionDialog(char *title) {
 	if (!transactionDialog) fatal("out of memory!");
 
 	transactionDialog->dialog = gtk_dialog_new();
-	gtk_signal_connect(GTK_OBJECT(transactionDialog->dialog), "destroy",
+	g_signal_connect(GTK_OBJECT(transactionDialog->dialog), "destroy",
 		GTK_SIGNAL_FUNC(ClosingTransactionDialog),
 		transactionDialog);
 	gtk_window_set_title(GTK_WINDOW(transactionDialog->dialog), title);
-	gtk_container_border_width(GTK_CONTAINER(transactionDialog->dialog), 5);
+	gtk_container_set_border_width(GTK_CONTAINER(transactionDialog->dialog), 5);
 	gtk_window_set_default_size(GTK_WINDOW(transactionDialog->dialog),
 		300, 200);
 	return transactionDialog;
@@ -157,7 +147,7 @@ GtkWidget *makeButton(char *s, GtkSignalFunc func, gpointer data) {
 	GtkWidget *button;
 
 	button = gtk_button_new_with_label(s);
-	gtk_signal_connect(GTK_OBJECT(button), "clicked",
+	g_signal_connect(GTK_OBJECT(button), "clicked",
 		GTK_SIGNAL_FUNC(func), data);
 	GTK_WIDGET_SET_FLAGS(button, GTK_CAN_DEFAULT);
 	gtk_widget_show(button);
@@ -192,24 +182,19 @@ GtkWidget *tableAttachEntry(GtkWidget *table, char *slable, char *sentry,
 
 GtkWidget *tableAttachScrollText(GtkWidget *table, char *slable, char *stext,
 	int pos) {
-	GtkWidget *hbox, *text, *scrollbar;
-	//GtkObject *hadjustment;
-
-	//hadjustment = gtk_adjustment_new(80.0, 80.0, 120.0, 1.0, 1.0, 0.0);
+	GtkWidget *hbox, *sw, *text;
 
 	gtk_table_attach_defaults(GTK_TABLE(table),
 		makeLabel(slable), 0, 1, pos, pos+1);
 
 	hbox = gtk_hbox_new(FALSE, 0);
 	gtk_widget_show(hbox);
-	text = gtk_text_new(NULL, NULL);
-	//text = gtk_text_new(GTK_ADJUSTMENT(hadjustment), NULL);
-	gtk_widget_set_usize(text, 230, 200);
-	gtk_box_pack_start(GTK_BOX(hbox), text, FALSE, FALSE, 0);
-	gtk_widget_show(text);
-	scrollbar = gtk_vscrollbar_new(GTK_TEXT(text)->vadj);
-	gtk_box_pack_start(GTK_BOX(hbox), scrollbar, FALSE, FALSE, 0);
-	gtk_widget_show(scrollbar);
+	text = gtk_text_view_new();
+	sw = gtk_scrolled_window_new(NULL, NULL);
+	gtk_container_add(GTK_CONTAINER(sw), text);
+	gtk_widget_set_size_request(text, 230, 200);
+	gtk_box_pack_start(GTK_BOX(hbox), sw, FALSE, FALSE, 0);
+	gtk_widget_show_all(sw);
 
 	gtk_table_attach_defaults(GTK_TABLE(table), hbox,
 		1, 3, pos, pos+1);
@@ -291,13 +276,12 @@ static void readQuadletApp(gpointer callback_data, guint callback_action,
 		"Memory Offset:", "0xFFFFF0000000", 1);
 	dialog->entries[2] = tableAttachEntry(table, "Result:", "", 2);
 
-	gtk_widget_show(table);
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog->dialog)->vbox),
 		table, TRUE, TRUE, 0);
 
 	transactionDialogAddOkClose(dialog, readQuadletAppOk);
 
-	gtk_widget_show(dialog->dialog);
+	gtk_widget_show_all(dialog->dialog);
 }
 
 /*
@@ -348,13 +332,12 @@ static void writeQuadletApp(gpointer callback_data, guint callback_action,
 		"0xFFFFF0000000", 1);
 	dialog->entries[2] = tableAttachEntry(table, "Data:", "", 2);
 
-	gtk_widget_show(table);
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog->dialog)->vbox),
 		table, TRUE, TRUE, 0);
 
 	transactionDialogAddOkClose(dialog, writeQuadletAppOk);
 
-	gtk_widget_show(dialog->dialog);
+	gtk_widget_show_all(dialog->dialog);
 }
 
 /*
@@ -387,7 +370,6 @@ void readBlockAppOk(GtkWidget *widget, gpointer data) {
  	if (nread < 0) {
 		gtk_entry_set_text(GTK_ENTRY(text_result), "Error");
 	} else {
-		gtk_text_freeze(GTK_TEXT(text_result));
 		gtk_editable_delete_text(GTK_EDITABLE(text_result), 0, -1);
 		pos = 0;
 		//for (p=result; p<result+length/4; p++) {
@@ -401,10 +383,10 @@ void readBlockAppOk(GtkWidget *widget, gpointer data) {
 			text[4] = 0;
 			snprintf(sresult, 30, "0x%08X:\t0x%08X  %s\n",
 				((quadlet_t)offset)+i*4, ntohl(result[i]), (char *) text);
-			gtk_editable_insert_text(GTK_EDITABLE(text_result),
-				sresult, strlen(sresult), &pos);
+			gtk_text_buffer_insert_at_cursor(
+				gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_result)),
+				sresult, strlen(sresult));
 		}
-		gtk_text_thaw(GTK_TEXT(text_result));
 	}
 
 	free(result);
@@ -430,14 +412,13 @@ static void readBlockApp(gpointer callback_data, guint callback_action,
 	dialog->entries[2] = tableAttachEntry(table, "Length:", "4", 2);
 	dialog->text = tableAttachScrollText(table, "Result:", "", 3);
 
-	gtk_widget_show(table);
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog->dialog)->vbox),
 		table, TRUE, TRUE, 0);
 
 	//dialogAddOkClose(dialog->dialog, readBlockAppOk);
 	transactionDialogAddOkClose(dialog, readBlockAppOk);
 
-	gtk_widget_show(dialog->dialog);
+	gtk_widget_show_all(dialog->dialog);
 }
 
 /*
@@ -458,7 +439,7 @@ static void forceBusResetApp(gpointer callback_data, guint callback_action,
 static GtkItemFactoryEntry menu_items[] = {
 	{"/_File",		NULL,		0,	0,	"<Branch>" },
 	{"/File/tearoff1",	NULL,		0,	0,	"<Tearoff>" },
-	{"/File/_Quit",		"<control>Q",	quitApp,0, },
+	{"/File/_Quit",		"<control>Q",	gtk_main_quit,0, },
 
 	{"/_Control",		NULL,		0,	0,	"<Branch>" },
 	{"/Control/tearoff1",	NULL,		0,	0,	"<Tearoff>" },
@@ -496,7 +477,7 @@ GtkWidget *makeMenuBar(GtkWidget *window) {
 		accel_group);
 	gtk_item_factory_create_items(item_factory, nmenu_items, menu_items,
 		NULL);
-	gtk_accel_group_attach(accel_group, GTK_OBJECT(window));
+	//gtk_accel_group_attach(accel_group, GTK_OBJECT(window));
 	menu_bar = gtk_item_factory_get_widget(item_factory, "<blah>");
 	gtk_widget_show(menu_bar);
 	return menu_bar;
