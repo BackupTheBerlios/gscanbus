@@ -1049,9 +1049,9 @@ int main (int argc, char *argv[])
 	GtkWidget *menu_bar;
 	quadlet_t quadlet;
 	int c, level;
-
+	int port = 0;
 	/* Parse command line options */
-	const char *optstring = "v::";
+	const char *optstring = "p:v::";
 
 	do {
 		c = getopt(argc, argv, optstring);
@@ -1062,6 +1062,10 @@ int main (int argc, char *argv[])
 				fprintf(stderr, "Debug level: %i\n", level);
 				set_debug_level(level);
 				break;
+ 		        case 'p':
+			        if (optarg == NULL) port = 0;
+				else port = atoi(optarg);
+	 
 		}
 	} while (c != -1);
 
@@ -1081,7 +1085,7 @@ int main (int argc, char *argv[])
         DEBUG_GENERAL fprintf(stderr, "successfully got handle\n");
         DEBUG_GENERAL fprintf(stderr, "current generation number: %d\n",
 		raw1394_get_generation(handle));
-	if (raw1394_set_port(handle, 0) < 0) {
+	if (raw1394_set_port(handle, port) < 0) {
 		perror("couldn't set port");
 		exit(1);
 	}

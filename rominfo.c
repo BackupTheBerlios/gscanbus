@@ -258,7 +258,9 @@ char *resolv_oui(int oui) {
 int get_node_type(Rom_info *rom_info) {
 	char cpu;
 	if (rom_info->unit_spec_id == 0xA02D) {
-		if (rom_info->unit_sw_version == 0x100) {
+		if ((rom_info->unit_sw_version == 0x100)||
+		(rom_info->unit_sw_version == 0x101) ||
+		(rom_info->unit_sw_version == 0x102)) {
 			return NODE_TYPE_CONF_CAM;
 		} else if (rom_info->unit_sw_version == 0x10000 ||
 			rom_info->unit_sw_version == 0x10001) {
