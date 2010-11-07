@@ -12,7 +12,5 @@ EXTRA_DIST		= debug.h decodeselfid.h fatal.h menues.h raw1394support.h raw1394ut
 INCLUDES		= @GTK_CFLAGS@
 LDADD			= @GTK_LIBS@
 
-install-data-local:
-	$(INSTALL_DATA) $(srcdir)/guid-resolv.conf /etc/guid-resolv.conf
-	$(INSTALL_DATA) $(srcdir)/oui-resolv.conf /etc/oui-resolv.conf
+sysconf_DATA = guid-resolv.conf oui-resolv.conf
 
