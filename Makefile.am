@@ -1,3 +1,5 @@
+AM_CPPFLAGS		= -DSYSCONFDIR="\"$(sysconfdir)\""
+
 bin_PROGRAMS		= gscanbus
 #bin_PROGRAMS		= gscanbus @GSCANBUS-MPATROL@ @GSCANBUS-EFENCE@
 #EXTRA_PROGRAMS		= gscanbus-mpatrol gscanbus-efence

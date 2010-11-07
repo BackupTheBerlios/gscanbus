@@ -22,10 +22,10 @@
 #include <netinet/in.h>
 #define MAXLINE 80
 #define GUIDFILENAME0 "guid-resolv.conf"
-#define GUIDFILENAME1 "/etc/guid-resolv.conf"
+#define GUIDFILENAME1 SYSCONFDIR "/guid-resolv.conf"
 #define GUIDERROR "Error while opening guid-resolv.conf"
 #define OUIFILENAME0 "oui-resolv.conf"
-#define OUIFILENAME1 "/etc/oui-resolv.conf"
+#define OUIFILENAME1 SYSCONFDIR "/oui-resolv.conf"
 #define OUIERROR "Error while opening oui-resolv.conf"
 
 #define QUADINC(x) x = x + 4
