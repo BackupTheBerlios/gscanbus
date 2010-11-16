@@ -25,14 +25,17 @@
 #include "topologyTree.h"
 
 #define MIN(x,y) ((x)<(y))?(x):(y)
+#define MAX(a,b) ((a)>(b)?(a):(b))
 
-char *decodeCameraSwVersion(quadlet_t quadlet) {
-    if ((quadlet & 0xFFFFFF) == 0x000101) return "1.20";
-    if ((quadlet & 0xFFFFFF) == 0x000100) return "1.04";
-    return "Unknown";
+static const char *decodeCameraSwVersion(quadlet_t quadlet) 
+{
+	if ((quadlet & 0xFFFFFF) == 0x000101) return "1.20";
+	if ((quadlet & 0xFFFFFF) == 0x000100) return "1.04";
+	return "Unknown";
 }
 
-int flipcoin(void) {
+static int flipcoin(void) 
+{
 	return (random()/(RAND_MAX/2));
 }
 
@@ -72,7 +75,8 @@ RAW1394topologyMap *generateTestTopologyMap(int nnodes) {
  * out:	number of next lower unprocessed child node
  */
 int spawnTopologySubTree(TopologyTree *topologyTree, int nodeid,
-	TopologyTree *parent) {
+			TopologyTree *parent) 
+{
 	SelfIdPacket_t *selfid0, *selfid1, *selfid2, *selfid3;
 	TopologyTree *pnode;
 	int myid;
@@ -154,7 +158,8 @@ int spawnTopologySubTree(TopologyTree *topologyTree, int nodeid,
 }
 
 TopologyTree *spawnTopologyTree(raw1394handle_t handle,
-	RAW1394topologyMap *topologyMap) {
+				RAW1394topologyMap *topologyMap) 
+{
 	int i, j, ret, selfIdCount, nodeCount;
 	unsigned int *pselfid_int;
 	//unsigned char *pselfid_char;
@@ -187,10 +192,8 @@ TopologyTree *spawnTopologyTree(raw1394handle_t handle,
 			init_rom_info(&ptopologyTree->rom_info);
 		}
 		ptopologyTree->parent = NULL;
-		//ptopologyTree->child1 = NULL;
-		//ptopologyTree->child2 = NULL;
-		//ptopologyTree->child3 = NULL;
-		for (j=0; j< MAX_CHILDS; j++) ptopologyTree->child[j] = NULL;
+		for (j=0; j < MAX_CHILDS; j++) 
+			ptopologyTree->child[j] = NULL;
 		ptopologyTree++;
 		DEBUG_GENERAL fprintf(stderr, "selfIdCount: %i, nodeCount: %i, i: %i, selfids: %i\n",
 			selfIdCount, nodeCount, i, ret);
@@ -200,12 +203,10 @@ TopologyTree *spawnTopologyTree(raw1394handle_t handle,
 	return &topologyTree[nodeCount-1];	/* return root node */
 }
 
-TopologyTree *topologyTreeLowestNode(TopologyTree *topologyTree) {
+TopologyTree *topologyTreeLowestNode(TopologyTree *topologyTree) 
+{
 	TopologyTree *p = topologyTree;
 	int i;
-	//if (p->child1 != NULL) p = MIN(topologyTreeLowestNode(p->child1),p);
-	//if (p->child2 != NULL) p = MIN(topologyTreeLowestNode(p->child2),p);
-	//if (p->child3 != NULL) p = MIN(topologyTreeLowestNode(p->child3),p);
 	for (i=0; i<MAX_CHILDS; i++) {
 		if (p->child[i] != NULL) p = MIN(topologyTreeLowestNode(
 			p->child[i]), p);
@@ -213,14 +214,9 @@ TopologyTree *topologyTreeLowestNode(TopologyTree *topologyTree) {
 	return p;
 }
 
-void freeSubTopologyTree(TopologyTree *topologyTree) {
+void freeSubTopologyTree(TopologyTree *topologyTree) 
+{
 	int i;
-	//if (topologyTree->child1 != NULL)
-		//freeSubTopologyTree(topologyTree->child1);
-	//if (topologyTree->child2 != NULL)
-		//freeSubTopologyTree(topologyTree->child2);
-	//if (topologyTree->child3 != NULL)
-		//freeSubTopologyTree(topologyTree->child3);
 	for (i=0; i<MAX_CHILDS; i++) {
 		if (topologyTree->child[i] != NULL)
 			freeSubTopologyTree(topologyTree->child[i]);
@@ -228,26 +224,26 @@ void freeSubTopologyTree(TopologyTree *topologyTree) {
 	free_rom_info(&topologyTree->rom_info);
 }
 
-void freeTopologyTree(TopologyTree *topologyTree) {
+void freeTopologyTree(TopologyTree *topologyTree) 
+{
 	TopologyTree *ptopologyTree = topologyTreeLowestNode(topologyTree);
 	freeSubTopologyTree(topologyTree);
 	return;	//FIXME
 	free(ptopologyTree);
 }
 
-TopologyTree *topologyTreeRoot(TopologyTree *topologyTree) {
+TopologyTree *topologyTreeRoot(TopologyTree *topologyTree) 
+{
 	if (topologyTree->parent == NULL) return topologyTree;
 	else return topologyTreeRoot(topologyTree->parent);
 }
 
-int topologySubTreeDepth(TopologyTree *node, int level) {
+int topologySubTreeDepth(TopologyTree *node, int level) 
+{
 	int maxdepth, i;
 	if (node == NULL) return level;
 	maxdepth = 0;
 	level++;
-	//maxdepth = topologySubTreeDepth(node->child1, level);
-	//maxdepth = MAX(maxdepth, topologySubTreeDepth(node->child2, level));
-	//maxdepth = MAX(maxdepth, topologySubTreeDepth(node->child3, level));
 	for (i=0; i<MAX_CHILDS; i++) {
 		maxdepth = MAX(maxdepth, topologySubTreeDepth(node->child[i],
 			level));
@@ -255,31 +251,27 @@ int topologySubTreeDepth(TopologyTree *node, int level) {
 	return maxdepth;
 }
 
-int topologyTreeDepth(TopologyTree *topologyTree) {
+int topologyTreeDepth(TopologyTree *topologyTree) 
+{
 	return topologySubTreeDepth(topologyTreeRoot(topologyTree), 0);
 }
 
-int numberOfChilds(TopologyTree *node) {
-	int n = 0;
-	int i;
-	//if (node->child1 != NULL) n++;
-	//if (node->child2 != NULL) n++;
-	//if (node->child3 != NULL) n++;
-	for (i=0; i<MAX_CHILDS; i++) {
-		if (node->child[i] != NULL) n++;
-	}
+int numberOfChilds(TopologyTree *node) 
+{
+	int i, n = 0;
+
+	if(!node)
+		return 0;
+
+	for (i=0; i<MAX_CHILDS; i++) 
+		if (node->child[i] != NULL) 
+			n++;
+
 	return n;
 }
 
-TopologyTree *getNthChild(TopologyTree *node, int n) {
-	//if (n < 1) return NULL;
-	//if (node->child1 != NULL) n--;
-	//if (n < 1) return node->child1;
-	//if (node->child2 != NULL) n--;
-	//if (n < 1) return node->child2;
-	//if (node->child3 != NULL) n--;
-	//if (n < 1) return node->child3;
-	//return NULL;
+TopologyTree *getNthChild(TopologyTree *node, int n) 
+{
 	int i;
 	if (n < 1 || n > MAX_CHILDS) return NULL;
 	for (i=0; i<MAX_CHILDS; i++) {
@@ -289,75 +281,4 @@ TopologyTree *getNthChild(TopologyTree *node, int n) {
 	fatal("Unexpected Error in getNthChild");
 	return NULL;
 }
-
-#if 0
-/* Nostalgic functions from non-GUI version */
-void generateTopologySubTreeString(char *topologyTreeString,
-	TopologyTree *node, int left, int width, int level, int localid) {
-	char *ptopologyTreeString, s[10], *header, *trailer, sep;
-	SelfIdPacket_t *selfid;
-	if (node == NULL) return;
-	selfid = &(node->selfid[0]);
-	if (selfid->packetZero.phyID == localid) {
-		header = trailer = "+========+";
-		sep = '|';
-	} else {
-		header = trailer = "+--------+";
-		sep = '|';
-	}
-	ptopologyTreeString = topologyTreeString + 80*4*level;
-	ptopologyTreeString += left + width/2 - 10/2;
-	memcpy(ptopologyTreeString,header,10);
-	ptopologyTreeString += 80;
-	sprintf(s, "%c%2i:%s %c", sep, selfid->packetZero.phyID,
-		decode_speed(selfid->packetZero.phySpeed), sep);
-	memcpy(ptopologyTreeString,s,10);
-	ptopologyTreeString += 80;
-	memcpy(ptopologyTreeString,trailer,10);
-	ptopologyTreeString += 80;
-	if (numberOfChilds(node) == 0) {
-		memcpy(ptopologyTreeString,"          ",10);
-	} else if (numberOfChilds(node) == 1) {
-		memcpy(ptopologyTreeString,"    ||    ",10);
-		generateTopologySubTreeString(topologyTreeString,
-			getNthChild(node,1), left, width, level+1, localid);
-	} else if (numberOfChilds(node) == 2) {
-		memcpy(ptopologyTreeString,"//      \\\\",10);
-		generateTopologySubTreeString(topologyTreeString,
-			getNthChild(node,1), left, width/2, level+1, localid);
-		generateTopologySubTreeString(topologyTreeString,
-			getNthChild(node,2), left+width/2, width/2, level+1,
-			localid);
-	} else if (numberOfChilds(node) == 3) {
-		memcpy(ptopologyTreeString,"//  ||  \\\\",10);
-		generateTopologySubTreeString(topologyTreeString,
-			getNthChild(node,1), left, width/3, level+1, localid);
-		generateTopologySubTreeString(topologyTreeString,
-			getNthChild(node,2), left+width/3, width/3, level+1,
-			localid);
-		generateTopologySubTreeString(topologyTreeString,
-			getNthChild(node,3), left+2*(width/3), width/3,
-			level+1, localid);
-	}
-}
-
-char *generateTopologyTreeString(TopologyTree *topologyTree, int localid) {
-	TopologyTree *root;
-	int depth, left, width;
-	static char *topologyTreeString;
-	if (topologyTree == NULL) return "";
-	left = 0;
-	width = 80;
-	root = topologyTreeRoot(topologyTree);
-	depth = topologyTreeDepth(topologyTree);
-	if (topologyTreeString != NULL) free(topologyTreeString);
-	topologyTreeString = malloc(depth*4*80+1);	/* four lines*depth */
-	if (!topologyTreeString) fatal("out of memory!");
-	memset(topologyTreeString,' ',depth*4*80);
-	topologyTreeString[depth*4*80+1]=0;
-	generateTopologySubTreeString(topologyTreeString, root, left, width, 0,
-		localid);
-	return topologyTreeString;
-}
-#endif
 

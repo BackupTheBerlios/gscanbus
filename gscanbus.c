@@ -79,8 +79,9 @@ you haven't loaded the raw1394 module.\n";
  * 	col_old:	The color to restore when finished
  */
 void drawTopologyLine(GdkDrawable *drawable, GdkGC *gc,
-	int x1, int y1, int x2, int y2, TopologyTree *node,
-	TopologyTree *child, GdkColor *col_new, GdkColor *col_old) {
+		int x1, int y1, int x2, int y2, TopologyTree *node,
+		TopologyTree *child, GdkColor *col_new, GdkColor *col_old) 
+{
 	SETLINEWIDTH(gc,(MIN(node->selfid[0].packetZero.phySpeed,
 		child->selfid[0].packetZero.phySpeed)+1)*2);
 	gdk_gc_set_foreground(gc, col_new);
@@ -88,8 +89,8 @@ void drawTopologyLine(GdkDrawable *drawable, GdkGC *gc,
 	gdk_gc_set_foreground(gc, col_old);
 }
 
-void chooseLabel(Rom_info *rom_info, TopologyTree *node, char *label) {
-
+void chooseLabel(Rom_info *rom_info, TopologyTree *node, char *label) 
+{
 	/* Use rom_info->label if it contains something meaningful */
 	if (rom_info->label != NULL && strcmp(rom_info->label, "Unknown")) {
 		strcpy(node->label, rom_info->label);
@@ -114,7 +115,8 @@ void chooseLabel(Rom_info *rom_info, TopologyTree *node, char *label) {
  * 	level:		depth of the current subTree in respect to the root
  */
 void drawTopologyTree(GdkDrawable *drawable, GdkWindow *window, GdkGC *gc,
-    	TopologyTree *node, int myPhyID, int left, int width, int level) {
+	    	TopologyTree *node, int myPhyID, int left, int width, int level) 
+{
     	int nodewidth = NODEWIDTH;
     	int nodeheight = NODEHEIGHT;
 	int xpmwidth;
@@ -266,7 +268,8 @@ void drawTopologyTree(GdkDrawable *drawable, GdkWindow *window, GdkGC *gc,
  * IN:		data:	A pointer to the drawable of the main window
  * RESULT:	TRUE on success, FALSE otherwise
  */
-gint Repaint (gpointer data) {
+gint Repaint (gpointer data) 
+{
 	RAW1394topologyMap* topologyMap;
 	int nodeCount, depth;
 	GtkWidget* drawing_area = (GtkWidget *) data;
@@ -328,7 +331,8 @@ gint Repaint (gpointer data) {
  * RESULT:	clicked node or NULL if no node was clicked
  */
 TopologyTree *detectClick(TopologyTree *node, int left, int width, int level,
-	int x, int y) {
+			int x, int y) 
+{
     	TopologyTree *child;
 	TopologyTree *click;
 
@@ -377,7 +381,8 @@ TopologyTree *detectClick(TopologyTree *node, int left, int width, int level,
  * 		event:	the expose event
  * RESULT:	always FALSE
  */
-static gint expose_event(GtkWidget *widget, GdkEventExpose *event) {
+static gint expose_event(GtkWidget *widget, GdkEventExpose *event) 
+{
 	gdk_draw_drawable(widget->window,
 		widget->style->fg_gc[GTK_WIDGET_STATE(widget)],
 		GDK_DRAWABLE(pixmap),
@@ -394,7 +399,8 @@ static gint expose_event(GtkWidget *widget, GdkEventExpose *event) {
  * 		event:	the configure event
  * RESULT:	always TRUE
  */
-static gint configure_event(GtkWidget *widget, GdkEventConfigure *event) {
+static gint configure_event(GtkWidget *widget, GdkEventConfigure *event) 
+{
 	if (pixmap) {
 		g_object_unref(pixmap);
 	}
@@ -408,26 +414,6 @@ static gint configure_event(GtkWidget *widget, GdkEventConfigure *event) {
 
 	return TRUE;
 }
-
-/* The following are now defined in menues.c */
-#if 0
-/*
- * Closes a dialog window.
- * IN:		widget:	not used
- * 		data:	the dialog
- */
-void CloseDialog(GtkWidget *widget, gpointer data) {
-	gtk_widget_destroy(GTK_WIDGET(data));
-}
-
-/*
- * Called when a dialog is closing. Releases the input focus.
- * IN:		widget:	the dialog
- */
-void ClosingDialog(GtkWidget *widget, gpointer data) {
-	gtk_grab_remove(GTK_WIDGET(widget));
-}
-#endif
 
 #define AVC_RETRY 4
 #define CTLVCR0 AVC_CTYPE_CONTROL | AVC_SUBUNIT_TYPE_TAPE_RECORDER | AVC_SUBUNIT_ID_0
@@ -444,7 +430,8 @@ void ClosingDialog(GtkWidget *widget, gpointer data) {
  * RETURNS:	OPERAND if device is playing
  * 		0 otherwise
  */
-int isPlaying(raw1394handle_t handle, int phyID) {
+int isPlaying(raw1394handle_t handle, int phyID)
+{
 	quadlet_t response = avc_transaction(handle, phyID, STATVCR0
 		| VCR_COMMAND_TRANSPORT_STATE | VCR_OPERAND_TRANSPORT_STATE,
 		AVC_RETRY);
@@ -462,7 +449,8 @@ int isPlaying(raw1394handle_t handle, int phyID) {
  * RETURNS:	OPERAND if device is recording
  * 		0 otherwise
  */
-int isRecording(raw1394handle_t handle, int phyID) {
+int isRecording(raw1394handle_t handle, int phyID)
+{
 	quadlet_t response = avc_transaction(handle, phyID, STATVCR0
 		| VCR_COMMAND_TRANSPORT_STATE | VCR_OPERAND_TRANSPORT_STATE,
                 AVC_RETRY);
@@ -480,7 +468,8 @@ int isRecording(raw1394handle_t handle, int phyID) {
  * IN:		widget:	the button
  * 		data:	The node
  */
-void avc_play(GtkWidget *widget, gpointer data) {
+void avc_play(GtkWidget *widget, gpointer data)
+{
 	int phyID;
 
 	phyID = ((TopologyTree *)data)->selfid[0].packetZero.phyID;
@@ -498,7 +487,8 @@ void avc_play(GtkWidget *widget, gpointer data) {
  * IN:		widget:	the button
  * 		data:	The node
  */
-void avc_stop(GtkWidget *widget, gpointer data) {
+void avc_stop(GtkWidget *widget, gpointer data)
+{
 	int phyID;
 
 	phyID = ((TopologyTree *)data)->selfid[0].packetZero.phyID;
@@ -514,7 +504,8 @@ void avc_stop(GtkWidget *widget, gpointer data) {
  * IN:		widget:	the button
  * 		data:	The node
  */
-void avc_rewind(GtkWidget *widget, gpointer data) {
+void avc_rewind(GtkWidget *widget, gpointer data) 
+{
 	int phyID;
 
 	phyID = ((TopologyTree *)data)->selfid[0].packetZero.phyID;
@@ -534,7 +525,8 @@ void avc_rewind(GtkWidget *widget, gpointer data) {
  * IN:		widget:	the button
  * 		data:	The node
  */
-void avc_pause(GtkWidget *widget, gpointer data) {
+void avc_pause(GtkWidget *widget, gpointer data) 
+{
 	int phyID, mode;
 
 	phyID = ((TopologyTree *)data)->selfid[0].packetZero.phyID;
@@ -566,7 +558,8 @@ void avc_pause(GtkWidget *widget, gpointer data) {
  * IN:		widget:	the button
  * 		data:	The node
  */
-void avc_forward(GtkWidget *widget, gpointer data) {
+void avc_forward(GtkWidget *widget, gpointer data) 
+{
 	int phyID;
 
 	phyID = ((TopologyTree *)data)->selfid[0].packetZero.phyID;
@@ -585,7 +578,8 @@ void avc_forward(GtkWidget *widget, gpointer data) {
  * IN:		widget:	the button
  * 		data:	The node
  */
-void avc_eject(GtkWidget *widget, gpointer data) {
+void avc_eject(GtkWidget *widget, gpointer data) 
+{
 	int phyID;
 
 	phyID = ((TopologyTree *)data)->selfid[0].packetZero.phyID;
@@ -598,7 +592,8 @@ void avc_eject(GtkWidget *widget, gpointer data) {
  * IN:		widget:	the button
  * 		data:	The node
  */
-void avc_record(GtkWidget *widget, gpointer data) {
+void avc_record(GtkWidget *widget, gpointer data) 
+{
 	int phyID;
 
 	phyID = ((TopologyTree *)data)->selfid[0].packetZero.phyID;
@@ -608,7 +603,8 @@ void avc_record(GtkWidget *widget, gpointer data) {
 
 #define MAX_DESCRIPTORS 0x100
 void avc_test_descriptors(int phyID, quadlet_t subunit_type,
-	quadlet_t subunit_id) {
+			quadlet_t subunit_id) 
+{
 	int i;
 	quadlet_t response;
 	char descriptors[MAX_DESCRIPTORS];
@@ -636,7 +632,8 @@ struct status_entry {
 	GtkWidget *entry;
 };
 
-gint update_avc_status(gpointer data) {
+gint update_avc_status(gpointer data) 
+{
 	struct status_entry *status_entry = (struct status_entry *) data;
 	char *status;
 	int phyID;
@@ -655,71 +652,58 @@ gint update_avc_status(gpointer data) {
 	return TRUE;
 }
 
-GtkWidget *make_avc_buttons(TopologyTree *node) {
-	//GtkWidget *table, *button;
+GtkWidget *make_avc_buttons(TopologyTree *node) 
+{
 	GtkWidget *hbox1, *hbox2, *hbox3, *vbox, *button, *label, *entry;
 	struct status_entry *status_entry;
 
 	status_entry = malloc(sizeof(struct status_entry));
 	if (status_entry == NULL) fatal("out of memory");
 
-	//table = gtk_table_new(8, 2, FALSE);
 	hbox1 = gtk_hbox_new(TRUE, 0);
 	hbox2 = gtk_hbox_new(TRUE, 0);
 	hbox3 = gtk_hbox_new(FALSE, 0);
 	button = gtk_button_new_with_label("<<");
 	g_signal_connect(GTK_OBJECT(button), "clicked",
-		GTK_SIGNAL_FUNC(avc_rewind), node);
+		G_CALLBACK(avc_rewind), node);
 	gtk_widget_show(button);
-	//gtk_table_attach_defaults(GTK_TABLE(table), button, 1, 3, 0, 1);
 	gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 0);
 	button = gtk_button_new_with_label("PLAY");
 	g_signal_connect(GTK_OBJECT(button), "clicked",
-		GTK_SIGNAL_FUNC(avc_play), node);
+		G_CALLBACK(avc_play), node);
 	gtk_widget_show(button);
-	//gtk_table_attach_defaults(GTK_TABLE(table), button, 3, 5, 0, 1);
 	gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 0);
 	button = gtk_button_new_with_label(">>");
 	g_signal_connect(GTK_OBJECT(button), "clicked",
-		GTK_SIGNAL_FUNC(avc_forward), node);
+		G_CALLBACK(avc_forward), node);
 	gtk_widget_show(button);
-	//gtk_table_attach_defaults(GTK_TABLE(table), button, 5, 7, 0, 1);
 	gtk_box_pack_start(GTK_BOX(hbox1), button, TRUE, TRUE, 0);
 	button = gtk_button_new_with_label("STOP");
 	g_signal_connect(GTK_OBJECT(button), "clicked",
-		GTK_SIGNAL_FUNC(avc_stop), node);
+		G_CALLBACK(avc_stop), node);
 	gtk_widget_show(button);
-	//gtk_table_attach_defaults(GTK_TABLE(table), button, 0, 2, 1, 2);
 	gtk_box_pack_start(GTK_BOX(hbox2), button, TRUE, TRUE, 0);
 	button = gtk_button_new_with_label("||");
 	g_signal_connect(GTK_OBJECT(button), "clicked",
-		GTK_SIGNAL_FUNC(avc_pause), node);
+		G_CALLBACK(avc_pause), node);
 	gtk_widget_show(button);
-	//gtk_table_attach_defaults(GTK_TABLE(table), button, 2, 4, 1, 2);
 	gtk_box_pack_start(GTK_BOX(hbox2), button, TRUE, TRUE, 0);
 	button = gtk_button_new_with_label("Eject");
 	g_signal_connect(GTK_OBJECT(button), "clicked",
-		GTK_SIGNAL_FUNC(avc_eject), node);
+		G_CALLBACK(avc_eject), node);
 	gtk_widget_show(button);
-	//gtk_table_attach_defaults(GTK_TABLE(table), button, 4, 6, 1, 2);
 	gtk_box_pack_start(GTK_BOX(hbox2), button, TRUE, TRUE, 0);
 	button = gtk_button_new_with_label("Record");
 	g_signal_connect(GTK_OBJECT(button), "clicked",
-		GTK_SIGNAL_FUNC(avc_record), node);
+		G_CALLBACK(avc_record), node);
 	gtk_widget_show(button);
-	//gtk_table_attach_defaults(GTK_TABLE(table), button, 6, 8, 1, 2);
 	gtk_box_pack_start(GTK_BOX(hbox2), button, TRUE, TRUE, 0);
-	//gtk_widget_show(table);
-	//return table;
 
 	label = gtk_label_new("Status: ");
 	gtk_widget_show(label);
 	entry = gtk_entry_new();
 	gtk_editable_set_editable(GTK_EDITABLE(entry), FALSE);
-	//g_signal_connect(GTK_OBJECT(button), "clicked",
-		//GTK_SIGNAL_FUNC(avc_record), node);
 	gtk_widget_show(entry);
-	//gtk_table_attach_defaults(GTK_TABLE(table), button, 6, 8, 1, 2);
 	gtk_box_pack_start(GTK_BOX(hbox3), label, TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(hbox3), entry, TRUE, TRUE, 0);
 
@@ -810,7 +794,7 @@ void popup_nodeinfo(TopologyTree *node) {
 
 	dialog_window = gtk_dialog_new();
 	g_signal_connect(GTK_OBJECT(dialog_window), "destroy",
-		GTK_SIGNAL_FUNC(ClosingDialog),
+		G_CALLBACK(ClosingDialog),
 		&dialog_window);
 	if (node->label != NULL && node->label[0] != '\0') {
 		gtk_window_set_title(GTK_WINDOW(dialog_window),
@@ -889,7 +873,7 @@ void popup_nodeinfo(TopologyTree *node) {
 
 	button = gtk_button_new_with_label("OK");
 	g_signal_connect(GTK_OBJECT(button), "clicked",
-		GTK_SIGNAL_FUNC(CloseDialog),
+		G_CALLBACK(CloseDialog),
 		dialog_window);
 	GTK_WIDGET_SET_FLAGS(button, GTK_CAN_DEFAULT);
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog_window)->action_area),
@@ -970,11 +954,11 @@ GtkWidget *makeDrawingArea(int x, int y) {
 	gtk_widget_set_size_request(GTK_WIDGET(drawing_area), x, y);
 	gtk_widget_show (drawing_area);
 	g_signal_connect (GTK_OBJECT (drawing_area), "expose_event",
-		GTK_SIGNAL_FUNC (expose_event), NULL);
+		G_CALLBACK (expose_event), NULL);
 	g_signal_connect (GTK_OBJECT (drawing_area), "configure_event",
-		GTK_SIGNAL_FUNC (configure_event), NULL);
+		G_CALLBACK (configure_event), NULL);
 	g_signal_connect (GTK_OBJECT (drawing_area), "button_press_event",
-		GTK_SIGNAL_FUNC (button_press_event), NULL);
+		G_CALLBACK (button_press_event), NULL);
 	gtk_widget_set_events(drawing_area, GDK_EXPOSURE_MASK
 		| GDK_LEAVE_NOTIFY_MASK
 		| GDK_BUTTON_PRESS_MASK);
@@ -1030,7 +1014,7 @@ int main (int argc, char *argv[])
 		raw1394_get_generation(handle));
 	if (raw1394_set_port(handle, port) < 0) {
 		perror("couldn't set port");
-		exit(1);
+		//exit(1);
 	}
 
 	DEBUG_GENERAL fprintf(stderr,"using first card found: %d nodes on bus, local ID is %d\n",
@@ -1050,7 +1034,7 @@ int main (int argc, char *argv[])
 	vbox = gtk_vbox_new (FALSE, 0);
 	gtk_container_add (GTK_CONTAINER (window), vbox);
 	g_signal_connect (GTK_OBJECT (window), "destroy",
-		GTK_SIGNAL_FUNC (gtk_main_quit), NULL);
+		G_CALLBACK (gtk_main_quit), NULL);
 
 	menu_bar = makeMenuBar(window);
 	drawing_area = makeDrawingArea(640, 480);

@@ -34,29 +34,17 @@
 #include <signal.h>
 #include <libraw1394/raw1394.h>
 
-#define MAX(a,b) ((a)>(b)?(a):(b))
-
 #define TEST_SELFID 0x80000000
 
 #define MAX_CHILDS (3+3*8)
 
-void fatal(char *s);
-
 typedef struct TopologyTree_t {
-	//SelfIdPacket_t		selfid;
 	SelfIdPacket_t			selfid[4];
 	Rom_info			rom_info;
 	char				label[256];
 	struct TopologyTree_t		*parent;
-	//struct TopologyTree_t		*child1;
-	//struct TopologyTree_t		*child2;
-	//struct TopologyTree_t		*child3;
 	struct TopologyTree_t		*child[MAX_CHILDS];
 } TopologyTree;
-
-char *decodeCameraSwVersion(quadlet_t quadlet);
-
-int flipcoin(void);
 
 RAW1394topologyMap *generateTestTopologyMap(int nnodes);
 
