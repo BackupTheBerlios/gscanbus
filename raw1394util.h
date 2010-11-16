@@ -1,4 +1,6 @@
-/* $Id: raw1394util.h,v 1.3 2001/05/09 10:27:02 ami Exp $
+/*
+ * This file is part of the gscanbus project.
+ * Copyright (C) 2001  Andreas Micklei  <nurgle@gmx.de>
  *
  * raw1394util.h - Linux IEEE-1394 Subsystem utility routines for
  * libraw1394
@@ -24,6 +26,8 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+#ifndef __RAW1394UITL_H__
+#define __RAW1394UTIL_H__
 
 #include <libraw1394/raw1394.h>
 #include "debug.h"
@@ -36,4 +40,6 @@ int cooked1394_read(raw1394handle_t handle, nodeid_t node, nodeaddr_t addr,
 
 int cooked1394_write(raw1394handle_t handle, nodeid_t node, nodeaddr_t addr,
                   size_t length, quadlet_t *data);
+
+#endif
 

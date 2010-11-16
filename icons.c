@@ -1,4 +1,6 @@
-/* $Id: icons.c,v 1.4 2001/07/11 10:53:51 ami Exp $
+/* 
+ * This file is part of the gscanbus project.
+ * Copyright (C) 2001  Andreas Micklei  <nurgle@gmx.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

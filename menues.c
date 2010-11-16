@@ -1,8 +1,11 @@
-/* $Id: menues.c,v 1.9 2001/07/11 10:53:51 ami Exp $
+/*
+ * This file is part of the gscanbus project.
+ * Copyright (C) 2001  Andreas Micklei  <nurgle@gmx.de>
+ * Copyright (C) 2010  Gareth McMullin  <gareth@blacksphere.co.nz>
  *
  * menues.c - Menues and Transaction Dialogs for gscanbus
- * written 11.2.2000 by Andreas Micklei
- * 6.4.2000: adapted to new endianess policy
+ * 		written 11.2.2000 to 6.4.2000 by Andreas Micklei
+ * 		updated for GTK+ 2 by Gareth McMullin
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

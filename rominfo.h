@@ -1,4 +1,6 @@
-/* $Id: rominfo.h,v 1.9 2001/07/11 10:53:51 ami Exp $
+/*
+ * This file is part of the gscanbus project.
+ * Copyright (C) 2001  Andreas Micklei  <nurgle@gmx.de>
  *
  * rominfo.h - Linux IEEE-1394 Subsystem CSR ROM info reading routines
  * written 23.11.1999 by Andreas Micklei

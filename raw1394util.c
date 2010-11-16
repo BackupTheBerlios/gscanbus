@@ -1,4 +1,6 @@
-/* $Id: raw1394util.c,v 1.4 2001/07/11 10:53:51 ami Exp $
+/* 
+ * This file is part of the gscanbus project.
+ * Copyright (C) 2001  Andreas Micklei  <nurgle@gmx.de>
  *
  * raw1394util.c - Linux IEEE-1394 Subsystem utility routines for
  * libraw1394

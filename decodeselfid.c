@@ -1,4 +1,6 @@
-/* $Id: decodeselfid.c,v 1.5 2000/06/27 19:02:58 ami Exp $
+/*
+ * This file is part of the gscanbus project.
+ * Copyright (C) 2001  Andreas Micklei  <nurgle@gmx.de>
  *
  * decodeselfid.c
  * written 19.10.1999 - 31.5.2000 by Andreas Micklei

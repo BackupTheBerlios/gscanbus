@@ -1,6 +1,8 @@
-/* $Id: menues.h,v 1.4 2001/05/09 10:27:02 ami Exp $
+/* 
+ * This file is part of the gscanbus project.
+ * Copyright (C) 2001  Andreas Micklei  <nurgle@gmx.de>
  *
- * menues.c - Menues and Transaction Dialogs for gscanbus
+ * menues.h - Menues and Transaction Dialogs for gscanbus
  * written 10.2.2000 by Andreas Micklei
  *
  * This program is free software; you can redistribute it and/or modify

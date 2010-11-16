@@ -1,68 +1,11 @@
-/* $Id: gscanbus.c,v 1.19 2001/07/11 10:53:51 ami Exp $
+/*
+ * This file is part of the gscanbus project.
+ * Copyright (C) 2001  Andreas Micklei  <nurgle@gmx.de>
+ * Copyright (C) 2010  Gareth McMullin  <gareth@blacksphere.co.nz>
  *
  * gscanbus.c - Linux IEEE-1394 Subsystem GDK Topology Viewing utility
- * version 0.1:	initial release
- * 		written 18.11.1999 by Andreas Micklei <micklei@fokus.gmd.de>
- * version 0.2: GUI Improvements: dubble buffering, highlighting of host
- *              Moved rominfo routines into a seperate file
- *              Added node information dialog
- *              Added guid-resolv.conf configuration file
- *              Various code cleanups and comments
- * 		written 22.11.1999 by Andreas Micklei <micklei@fokus.gmd.de>
- * version 0.3: Adapted to new libraw1394 by Andreas E. Bombe
- * 		included custom function for getting the topology map
- * 		added simpleavc to control DVCRS and Camcorders, that conform
- * 		to the VCR subunit specification
- * 		written 10.12.1999 by Andreas Micklei <micklei@fokus.gmd.de>
- * version 0.4: new, much more flexible simpleavc (still simple though ;-))
- * 		Included some infos from rom_info into popup dialogs
- * 		Added Menu Bar with Menu items analogous to gnome1394
- * 		written 03.02.2000 by Andreas Micklei <micklei@fokus.gmd.de>
- * version 0.5: Moved menue bar and dialogs to menues.c
- *		Added read Block Transaction from gnome1394
- *		Incorporated endianess changes (Simon Vogl)
- *		Adapted simpleavc to new FCP handling of libraw1394 0.6
- *		written 06.04.2000 by Andreas Micklei
- *		<andreas.micklei@ivistar.de>
- * version 0.6: Added AV/C subunit detection
- * 		Added VCR status display
- * 		Fixed Black-Window bug (Thanks to Mark Knecht for reporting)
- * 		Added various new constants and functions to simpleavc
- * 		Fixed simpleavc block transactions
- * 		Pixmaps are now compiled in
- *		written 22.05.2000 by Andreas Micklei
- *		<andreas.micklei@ivistar.de>
- * version 0.7-pre1:
- *		Added initial support for >=4 port phys (display is not yet
- *		correct)
- *		Added support for slow units via delay in rom_info
- *		Switched to cooked functions from raw1394util. This supercedes
- *		the delay calls. The necessary data field is left in however
- *		for further experiments.
- * version 0.7-pre2:
- *		Adapted error handling code to new semantics of libraw1394
- *		written 26.01.2001 by Andreas Micklei
- *		<andreas.micklei@ivistar.de>
- *
- * version 0.7:
- *		Stabilization
- *		Recognition of more devices (Windows and MacOS PCs for
- *		example) and more icons
- *		written 05.06.2001 by Andreas Micklei
- *		<andreas.micklei@ivistar.de>
- *
- * version 0.7.1:
- *		Incorporated major bugfixes from Manfred Weihs: Delay is no
- *		longer used at all (was used unitialized before).
- *		Incorporated patch from Jim Harkins: ASCII dump in block read
- *		dialog, fixed some compiler warnings.
- *
- * 		TODO:
- * 		- Improve Layout of Block Transactions
- * 		- Implement Block and Lock Transactions
- * 		- Implement more Control Functions
- * 		- Implement rendering for >=4 port phys
- * 		- Remove SIGSEGV crashes
+ * 		written 18.11.1999 to 05.06.2001 by Andreas Micklei 
+ * 		updated for GTK+ 2 by Gareth McMullin
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

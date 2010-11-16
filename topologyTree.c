@@ -1,4 +1,6 @@
-/* $Id: topologyTree.c,v 1.10 2001/05/09 10:27:02 ami Exp $
+/*
+ * This file is part of the gscanbus project.
+ * Copyright (C) 2001  Andreas Micklei  <nurgle@gmx.de>
  *
  * topologyTree.c - Linux IEEE-1394 Subsystem Topology Tree
  * spawning and traversing routines

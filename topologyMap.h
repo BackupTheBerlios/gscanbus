@@ -1,4 +1,6 @@
-/* $Id: topologyMap.h,v 1.4 2001/05/09 10:27:02 ami Exp $
+/*
+ * This file is part of the gscanbus project.
+ * Copyright (C) 2001  Andreas Micklei  <nurgle@gmx.de>
  *
  * topologyMap.h - Linux IEEE-1394 Subsystem Topology Map fetching routine.
  * This routine serves as a temporary replacement for the

@@ -1,4 +1,6 @@
-/* $Id: simpleavc.c,v 1.9 2001/07/11 10:53:51 ami Exp $
+/*
+ * This file is part of the gscanbus project.
+ * Copyright (C) 2001  Andreas Micklei  <nurgle@gmx.de>
  *
  * simpleavc.c - Linux IEEE-1394 Subsystem AV/C routines
  * These routines are very basic. They can only be used for sending simple
