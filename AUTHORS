@@ -1,3 +1,10 @@
 Andreas Micklei <nurgle@gmx.de>
-Gareth McMullin <gareth@blacksphere.co.nz>
+Jim Harkins (ASCII dump, compilation fixes)
+Manfred Weihs (Major bugfixes)
+Simon Vogl (endianess fixes)
+Mark Knecht (bug reports)
+PK Chen of VIA Technologies, Inc (hardware)"
+Gareth McMullin <gareth@blacksphere.co.nz> (GTK+ 2 port)
+
+Many ideas taken from gnome1394 by Emanuel Pirker
 

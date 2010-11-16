@@ -60,43 +60,41 @@ void ClosingTransactionDialog(GtkWidget *widget, gpointer data) {
  * Callback for the about menu item from the menu bar.
  */
 static void aboutApp(gpointer callback_data, guint callback_action,
-	GtkWidget *widget) {
-	GtkWidget *button, *dialog_window, *headline, *text;
-	char *sheadline = "gscanbus 0.7.1\nA utility to access the IEEE1394 bus.";
-	char *s = "\nwritten 11.07.2001 by Andreas Micklei\n\nMany ideas taken from gnome1394\nby Emanuel Pirker\n\nContributors:\nJim Harkins (ASCII dump, compilation fixes)\nManfred Weihs (Major bugfixes)\nSimon Vogl (endianess fixes)\nMark Knecht (bug reports)\nPK Chen of VIA Technologies, Inc (hardware)";
+		GtkWidget *widget) 
+{
+	const gchar *authors[] = 
+		{"Andreas Micklei <nurgle@gmx.de>",
+		"Jim Harkins (ASCII dump, compilation fixes)",
+		"Manfred Weihs (Major bugfixes)",
+		"Simon Vogl (endianess fixes)",
+		"Mark Knecht (bug reports)",
+		"PK Chen of VIA Technologies, Inc (hardware)",
+		"Gareth McMullin <gareth@blacksphere.co.nz>", NULL};
 
-	dialog_window = gtk_dialog_new();
-	g_signal_connect(GTK_OBJECT(dialog_window), "destroy",
-		GTK_SIGNAL_FUNC(ClosingDialog),
-		&dialog_window);
-	gtk_window_set_title(GTK_WINDOW(dialog_window), "About");
-	gtk_container_set_border_width(GTK_CONTAINER(dialog_window), 5);
-	gtk_window_set_default_size(GTK_WINDOW(dialog_window), 300, 200);
+        gtk_show_about_dialog(NULL,
+                "program_name", PACKAGE_NAME,
+                "version", VERSION,
+                "comments", "A utility to access the IEEE1394 bus.\n"
+			"Many ideas taken from gnome1394 by Emanuel Pirker",
+                "copyright", "Copyright (C) 2001  Andreas Micklei\n"
+			"Copyright (C) 2010  Gareth McMullin",
+                "license", 
+			"This program is free software; you can redistribute it and/or modify\n"
+			"it under the terms of the GNU General Public License as published by\n"
+			"the Free Software Foundation; either version 2 of the License, or\n"
+			"(at your option) any later version.\n\n"
+ 
+			"This program is distributed in the hope that it will be useful,\n"
+			"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+			"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+			"GNU General Public License for more details.\n\n"
 
-	headline = gtk_label_new(sheadline);
-	gtk_widget_show(headline);
-
-	text = gtk_label_new(s);
-	gtk_label_set_justify(GTK_LABEL(text), GTK_JUSTIFY_LEFT);
-	gtk_widget_show(text);
-
-	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog_window)->vbox),
-		headline, TRUE, TRUE, 0);
-
-	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog_window)->vbox),
-		text, TRUE, TRUE, 0);
-
-	button = gtk_button_new_with_label("OK");
-	g_signal_connect(GTK_OBJECT(button), "clicked",
-		GTK_SIGNAL_FUNC(CloseDialog),
-		dialog_window);
-	GTK_WIDGET_SET_FLAGS(button, GTK_CAN_DEFAULT);
-	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog_window)->action_area),
-		button, TRUE, TRUE, 0);
-	gtk_widget_grab_default(button);
-	gtk_widget_show(button);
-
-	gtk_widget_show(dialog_window);
+			"You should have received a copy of the GNU General Public License\n"
+			"along with this program; if not, write to the Free Software Foundation,\n"
+			"Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.\n",
+                "website", "http://gscanbus.berlios.de/",
+		"authors", authors,
+                NULL);
 }
 
 GtkWidget *makeDialogWindow(char *title) {
@@ -104,7 +102,7 @@ GtkWidget *makeDialogWindow(char *title) {
 
 	dialog_window = gtk_dialog_new();
 	g_signal_connect(GTK_OBJECT(dialog_window), "destroy",
-		GTK_SIGNAL_FUNC(ClosingDialog),
+		G_CALLBACK(ClosingDialog),
 		&dialog_window);
 	gtk_window_set_title(GTK_WINDOW(dialog_window), title);
 	gtk_container_set_border_width(GTK_CONTAINER(dialog_window), 5);
@@ -120,7 +118,7 @@ TransactionDialog *makeTransactionDialog(char *title) {
 
 	transactionDialog->dialog = gtk_dialog_new();
 	g_signal_connect(GTK_OBJECT(transactionDialog->dialog), "destroy",
-		GTK_SIGNAL_FUNC(ClosingTransactionDialog),
+		G_CALLBACK(ClosingTransactionDialog),
 		transactionDialog);
 	gtk_window_set_title(GTK_WINDOW(transactionDialog->dialog), title);
 	gtk_container_set_border_width(GTK_CONTAINER(transactionDialog->dialog), 5);
@@ -151,7 +149,7 @@ GtkWidget *makeButton(char *s, GtkSignalFunc func, gpointer data) {
 
 	button = gtk_button_new_with_label(s);
 	g_signal_connect(GTK_OBJECT(button), "clicked",
-		GTK_SIGNAL_FUNC(func), data);
+		G_CALLBACK(func), data);
 	GTK_WIDGET_SET_FLAGS(button, GTK_CAN_DEFAULT);
 	gtk_widget_show(button);
 	return button;
@@ -208,12 +206,12 @@ void dialogAddOkClose(GtkWidget *dialog_window, GtkSignalFunc func) {
 	GtkWidget *button_ok, *button_cancel;
 
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog_window)->action_area),
-		button_ok = makeButton("OK", GTK_SIGNAL_FUNC(func),
+		button_ok = makeButton("OK", G_CALLBACK(func),
 		dialog_window), TRUE, TRUE, 0);
 
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog_window)->action_area),
 		button_cancel = makeButton("Close",
-		GTK_SIGNAL_FUNC(CloseDialog), dialog_window), TRUE, TRUE, 0);
+		G_CALLBACK(CloseDialog), dialog_window), TRUE, TRUE, 0);
 
 	gtk_widget_grab_default(button_ok);
 }
@@ -223,12 +221,12 @@ void transactionDialogAddOkClose(TransactionDialog *dialog,
 	GtkWidget *button_ok, *button_cancel;
 
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog->dialog)->action_area),
-		button_ok = makeButton("OK", GTK_SIGNAL_FUNC(func),
+		button_ok = makeButton("OK", G_CALLBACK(func),
 		dialog), TRUE, TRUE, 0);
 
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog->dialog)->action_area),
 		button_cancel = makeButton("Close",
-		GTK_SIGNAL_FUNC(CloseDialog), dialog->dialog), TRUE, TRUE, 0);
+		G_CALLBACK(CloseDialog), dialog->dialog), TRUE, TRUE, 0);
 
 	gtk_widget_grab_default(button_ok);
 }
