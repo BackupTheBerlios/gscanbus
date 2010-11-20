@@ -1,0 +1,5 @@
+Remove calls to deprecated GTK functions.
+Draw the topology tree using Cairo.
+Get 1394 events through the GTK event loop using g_io_add_watch().
+Link to libavc1394 and remove funcions maintained there.
+
