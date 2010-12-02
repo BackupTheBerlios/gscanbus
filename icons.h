@@ -20,11 +20,9 @@
 #include "rominfo.h"
 #include <gtk/gtk.h>
 
-extern GdkPixmap *xpm_cpu_linux;
-extern GdkBitmap *xpm_cpu_linux_mask;
+extern GdkPixbuf *xpm_cpu_linux;
 
 void initIcons(GdkWindow *window);
 
-void chooseIcon(Rom_info *rom_info, GdkBitmap **xpm_node,
-	GdkBitmap **xpm_node_mask, char **label);
+void chooseIcon(Rom_info *rom_info, GdkPixbuf **xpm_node, char **label);
 

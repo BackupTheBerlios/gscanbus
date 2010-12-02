@@ -121,8 +121,7 @@ void drawTopologyTree(GdkDrawable *drawable, GdkWindow *window, GdkGC *gc,
     	int nodeheight = NODEHEIGHT;
 	int xpmwidth;
 	int xpmheight;
-    	GdkPixmap *xpm_node;
-    	GdkBitmap *xpm_node_mask;
+    	GdkPixbuf *xpm_node;
     	TopologyTree *child;
 	Rom_info rom_info;
 	GdkGCValues gc_values;
@@ -163,7 +162,7 @@ void drawTopologyTree(GdkDrawable *drawable, GdkWindow *window, GdkGC *gc,
 	rom_info = node->rom_info;
 
 	/* Choose label and icon */
-	chooseIcon(&rom_info, &xpm_node, &xpm_node_mask, &label);
+	chooseIcon(&rom_info, &xpm_node, &label);
 	chooseLabel(&rom_info, node, label);
 
 	/* Recursively draw rest of tree */
@@ -228,7 +227,6 @@ void drawTopologyTree(GdkDrawable *drawable, GdkWindow *window, GdkGC *gc,
 		if (strcmp(node->label, "Unknown") == 0)
 			strcpy(node->label, "Localhost");
 		xpm_node = xpm_cpu_linux;	/* Host controller */
-		xpm_node_mask = xpm_cpu_linux_mask;
 		gdk_gc_set_foreground(gc, col_arc);
 		gdk_draw_arc(drawable, gc, 1,
 			left + (width/2 - nodewidth/2),
@@ -238,17 +236,12 @@ void drawTopologyTree(GdkDrawable *drawable, GdkWindow *window, GdkGC *gc,
 
 	/* Draw icon */
 	gdk_gc_set_foreground(gc, &gc_values.foreground);
-
-	gdk_drawable_get_size(GDK_DRAWABLE(xpm_node), &xpmwidth, &xpmheight);
-
-	gdk_gc_set_clip_origin(gc, left + (width/2 - xpmwidth/2),
-		level*nodeheight*2 + (nodeheight-xpmheight)/2);
-	gdk_gc_set_clip_mask(gc, xpm_node_mask);
-	gdk_draw_drawable(drawable, gc, xpm_node, 0, 0,
+	xpmwidth = gdk_pixbuf_get_width(xpm_node);
+	xpmheight = gdk_pixbuf_get_height(xpm_node);
+	gdk_draw_pixbuf(drawable, gc, xpm_node, 0, 0, 
 		left + (width/2 - xpmwidth/2),
 		level*nodeheight*2 + (nodeheight-xpmheight)/2,
-		xpmwidth, xpmheight);
-	gdk_gc_set_clip_mask(gc, gc_values.clip_mask);
+		xpmwidth, xpmheight, GDK_RGB_DITHER_NORMAL, 0, 0);
 
 	/* Draw speed string */
 	gdk_draw_string(drawable, font, gc,
