@@ -22,7 +22,7 @@
 
 extern GdkPixbuf *xpm_cpu_linux;
 
-void initIcons(GdkWindow *window);
+void initIcons(void);
 
 void chooseIcon(Rom_info *rom_info, GdkPixbuf **xpm_node, char **label);
 

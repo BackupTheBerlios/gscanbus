@@ -36,6 +36,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <unistd.h>
+#include <math.h>
 
 #define FONTNAME "-*-helvetica-*-*-*-*-12-*-*-*-*-*-*-*"
 #define FONTHEIGHT 12
@@ -78,15 +79,16 @@ you haven't loaded the raw1394 module.\n";
  * 	col_new:	The color to use for the line
  * 	col_old:	The color to restore when finished
  */
-void drawTopologyLine(GdkDrawable *drawable, GdkGC *gc,
+void drawTopologyLine(cairo_t *cr,
 		int x1, int y1, int x2, int y2, TopologyTree *node,
-		TopologyTree *child, GdkColor *col_new, GdkColor *col_old) 
+		TopologyTree *child, GdkColor *col_new)
 {
-	SETLINEWIDTH(gc,(MIN(node->selfid[0].packetZero.phySpeed,
-		child->selfid[0].packetZero.phySpeed)+1)*2);
-	gdk_gc_set_foreground(gc, col_new);
-	gdk_draw_line(drawable, gc, x1, y1, x2, y2);
-	gdk_gc_set_foreground(gc, col_old);
+	cairo_set_line_width(cr, (MIN(node->selfid[0].packetZero.phySpeed,
+			child->selfid[0].packetZero.phySpeed)+1)*2);
+	gdk_cairo_set_source_color(cr, col_new);
+	cairo_move_to(cr, x1, y1);
+	cairo_line_to(cr, x2, y2);
+	cairo_stroke(cr);
 }
 
 void chooseLabel(Rom_info *rom_info, TopologyTree *node, char *label) 
@@ -114,7 +116,7 @@ void chooseLabel(Rom_info *rom_info, TopologyTree *node, char *label)
  * 	width:		width of drawing area
  * 	level:		depth of the current subTree in respect to the root
  */
-void drawTopologyTree(GdkDrawable *drawable, GdkWindow *window, GdkGC *gc,
+void drawTopologyTree(cairo_t *cr,
 	    	TopologyTree *node, int myPhyID, int left, int width, int level) 
 {
     	int nodewidth = NODEWIDTH;
@@ -124,23 +126,13 @@ void drawTopologyTree(GdkDrawable *drawable, GdkWindow *window, GdkGC *gc,
     	GdkPixbuf *xpm_node;
     	TopologyTree *child;
 	Rom_info rom_info;
-	GdkGCValues gc_values;
 	char *label = NULL;
 
 	/* All static variables are only loaded once and then reused */
-    	static GdkFont *font;
     	static GdkColormap *colormap;
     	static GdkColor *col_arc;
     	static GdkColor *col_lines;
 
-	/* Remember default from gc */
-	gdk_gc_get_values(gc, &gc_values);
-
-	/* Load resources (font, colours, pixmaps) */
-    	if (font == NULL) {
-		font = gdk_font_load(FONTNAME);
-		gdk_font_ref (font);	/* is this necessary? */
-	}
 	if (colormap == NULL) {
 		colormap = gdk_colormap_get_system();
 		gdk_colormap_ref(colormap);	/* is this necessary? */
@@ -157,7 +149,7 @@ void drawTopologyTree(GdkDrawable *drawable, GdkWindow *window, GdkGC *gc,
 		col_lines = col_arc;
 	}
 
-	initIcons(window);
+	initIcons();
 
 	rom_info = node->rom_info;
 
@@ -171,89 +163,93 @@ void drawTopologyTree(GdkDrawable *drawable, GdkWindow *window, GdkGC *gc,
 	} else if (numberOfChilds(node) == 1) {
 		/* Draw one child directly beneath us */
 		child = getNthChild(node,1);
-		drawTopologyLine(drawable, gc,
+		drawTopologyLine(cr,
 			left+width/2, level*nodeheight*2+nodeheight/2,
 			left+width/2, (level+1)*nodeheight*2+nodeheight/2,
-			node, child, col_lines, &gc_values.foreground);
-		drawTopologyTree(drawable, window, gc, child, myPhyID,
+			node, child, col_lines);
+		drawTopologyTree(cr, child, myPhyID,
 			left, width, level+1);
 	} else if (numberOfChilds(node) == 2) {
 		/* Draw two childs left and right beneath us */
 		child = getNthChild(node,1);
-		drawTopologyLine(drawable, gc,
+		drawTopologyLine(cr,
 			left+width/2, level*nodeheight*2+nodeheight/2,
 			left+width/4, (level+1)*nodeheight*2+nodeheight/2,
-			node, child, col_lines, &gc_values.foreground);
-		drawTopologyTree(drawable, window, gc, child, myPhyID,
+			node, child, col_lines);
+		drawTopologyTree(cr, child, myPhyID,
 			left, width/2, level+1);
 		child = getNthChild(node,2);
-		drawTopologyLine(drawable, gc,
+		drawTopologyLine(cr,
 			left+width/2, level*nodeheight*2+nodeheight/2,
 			left+width/2+width/4,
 			(level+1)*nodeheight*2+nodeheight/2,
-			node, child, col_lines, &gc_values.foreground);
-		drawTopologyTree(drawable, window, gc, child, myPhyID,
+			node, child, col_lines);
+		drawTopologyTree(cr, child, myPhyID,
 			left+width/2, width/2, level+1);
 	} else if (numberOfChilds(node) == 3) {
 		/* Draw three childs left, right and directly beneath us */
 		child = getNthChild(node,1);
-		drawTopologyLine(drawable, gc,
+		drawTopologyLine(cr,
 			left+width/2, level*nodeheight*2+nodeheight/2,
 			left+width/6, (level+1)*nodeheight*2+nodeheight/2,
-			node, child, col_lines, &gc_values.foreground);
-		drawTopologyTree(drawable, window, gc, child, myPhyID,
+			node, child, col_lines);
+		drawTopologyTree(cr, child, myPhyID,
 			left, width/3, level+1);
 		child = getNthChild(node,2);
-		drawTopologyLine(drawable, gc,
+		drawTopologyLine(cr,
 			left+width/2, level*nodeheight*2+nodeheight/2,
 			left+width/2, (level+1)*nodeheight*2+nodeheight/2,
-			node, child, col_lines, &gc_values.foreground);
-		drawTopologyTree(drawable, window, gc, child, myPhyID,
+			node, child, col_lines);
+		drawTopologyTree(cr, child, myPhyID,
 			left, width, level+1);
 		child = getNthChild(node,3);
-		drawTopologyLine(drawable, gc,
+		drawTopologyLine(cr,
 			left+width/2, level*nodeheight*2+nodeheight/2,
 			left+2*(width/3)+width/6,
 			(level+1)*nodeheight*2+nodeheight/2,
-			node, child, col_lines, &gc_values.foreground);
-		drawTopologyTree(drawable, window, gc, child, myPhyID,
+			node, child, col_lines);
+		drawTopologyTree(cr, child, myPhyID,
 			left+2*(width/3), width/3, level+1);
 	}
-
-	SETLINEWIDTH(gc, 1);
 
 	/* Highlight Host controller and give it a Linux pixmap */
 	if (node->selfid[0].packetZero.phyID == myPhyID) {
 		if (strcmp(node->label, "Unknown") == 0)
 			strcpy(node->label, "Localhost");
 		xpm_node = xpm_cpu_linux;	/* Host controller */
-		gdk_gc_set_foreground(gc, col_arc);
-		gdk_draw_arc(drawable, gc, 1,
-			left + (width/2 - nodewidth/2),
-			level*nodeheight*2, nodewidth, nodeheight,
-			0, 360*64);
+
+		gdk_cairo_set_source_color(cr, col_arc);
+		cairo_arc(cr, left + (width/2),
+			level*nodeheight*2 + nodeheight/2, nodewidth/2, 0, 2*M_PI);
+			
+		cairo_fill(cr);
 	}
 
 	/* Draw icon */
-	gdk_gc_set_foreground(gc, &gc_values.foreground);
 	xpmwidth = gdk_pixbuf_get_width(xpm_node);
 	xpmheight = gdk_pixbuf_get_height(xpm_node);
-	gdk_draw_pixbuf(drawable, gc, xpm_node, 0, 0, 
-		left + (width/2 - xpmwidth/2),
-		level*nodeheight*2 + (nodeheight-xpmheight)/2,
-		xpmwidth, xpmheight, GDK_RGB_DITHER_NORMAL, 0, 0);
+	gdk_cairo_set_source_pixbuf(cr, xpm_node, 
+			left + (width/2 - xpmwidth/2),
+			level*nodeheight*2 + (nodeheight-xpmheight)/2);
+	cairo_rectangle(cr, 
+			left + (width/2 - xpmwidth/2),
+			level*nodeheight*2 + (nodeheight-xpmheight)/2,
+			xpmwidth, xpmheight);
+	cairo_fill(cr);
 
+	cairo_select_font_face(cr, "sans-serif", CAIRO_FONT_SLANT_OBLIQUE,
+			CAIRO_FONT_WEIGHT_NORMAL);
+	cairo_set_font_size(cr, FONTHEIGHT);
+	cairo_set_source_rgb(cr, 0, 0, 0);
 	/* Draw speed string */
-	gdk_draw_string(drawable, font, gc,
-		left + (width/2 - nodewidth/2),
-		level*nodeheight*2+nodeheight+FONTHEIGHT,
-		decode_speed(node->selfid[0].packetZero.phySpeed));
+	cairo_move_to(cr, left + (width/2 - nodewidth/2), 
+			level*nodeheight*2+nodeheight+FONTHEIGHT);
+	cairo_show_text(cr, decode_speed(node->selfid[0].packetZero.phySpeed));
 
 	/* Draw label */
-	gdk_draw_string(drawable, font, gc,
-		left + (width/2 - nodewidth/2),
-		level*nodeheight*2+nodeheight+FONTHEIGHT*2,
-		node->label);
+	cairo_move_to(cr, left + (width/2 - nodewidth/2), 
+			level*nodeheight*2+nodeheight+FONTHEIGHT*2);
+	cairo_show_text(cr, node->label);
 }
 
 /*
@@ -272,6 +268,7 @@ gint Repaint (gpointer data)
 	GdkGC *gc;
 	GdkPixmap *pixmap = g_object_get_data(G_OBJECT(drawing_area), 
 			"back_pixmap");
+	cairo_t *cr = gdk_cairo_create(GDK_DRAWABLE(pixmap));
 
 	nodeCount = raw1394_get_nodecount(handle);
 	topologyMap = raw1394GetTopologyMap(handle);
@@ -301,9 +298,10 @@ gint Repaint (gpointer data)
 		0, 0, width, height);
 
 	if (depth != 0)
-		drawTopologyTree(pixmap, drawable, gc, topologyTree,
+		drawTopologyTree(cr, topologyTree,
 			raw1394_get_local_id(handle) & 0x3f, 0, width, 0);
 
+	cairo_destroy(cr);
 	gdk_gc_unref(gc);
 
 	update_rect.x = 0;

@@ -35,70 +35,12 @@ GdkPixbuf *xpm_cpu = NULL;
 GdkPixbuf *xpm_cpu_linux = NULL;
 GdkPixbuf *xpm_cpu_apple = NULL;
 GdkPixbuf *xpm_cpu_windows = NULL;
-/*
-GdkBitmap *xpm_unknown_mask;
-GdkBitmap *xpm_dvcr_mask;
-GdkPixmap *xpm_disk_mask;
-GdkBitmap *xpm_cpu_mask;
-GdkBitmap *xpm_cpu_linux_mask;
-GdkBitmap *xpm_cpu_apple_mask;
-GdkBitmap *xpm_cpu_windows_mask;
-GdkWindow *xpm_window = NULL;
-*/
 
 static int chooseIconVendor(Rom_info *, GdkPixbuf **, char **);
 static int contains(char *, char *);
 
-/*
- * Initialize a GdkPixmap and corresponding mask from xpm data. If the
- * pixmap was already loaded and the window has not changed, nothing is done.
- * If the pixmap was already loaded and the window has changed, the pixmap
- * will be reloaded.
- * IN:	xpm:		previously initialized pixmap if any
- *	xpm_mask:	previously initialized mask if any
- *	xpm_window:	the window previously used for pixmaps
- *	window:		the window to use now for pixmaps
- *	data:		a pointer to the xpm data
- * OUT:	xpm:		the loaded pixmap
- *	xpm_mask:	the loaded mask
- */
-/*
-static void init_xpm_d(GdkPixmap **xpm, GdkBitmap **xpm_mask, GdkWindow *xpm_window,
-	GdkWindow *window, char **xpm_data) 
+void initIcons(void) 
 {
-	GdkPixbuf *pixbuf = gdk_pixbuf_new_from_xpm_data(xpm_data);
-
-	if (xpm_window != window) {
-		if (*xpm != NULL) gdk_pixmap_unref(*xpm);
-		if (*xpm_mask != NULL) gdk_bitmap_unref(*xpm_mask);
-	}
-	if (*xpm == NULL || xpm_window != window) {
-		*xpm = gdk_pixmap_create_from_xpm_d(
-			window, xpm_mask, NULL, xpm_data);
-	}
-}
-*/
-
-void initIcons(GdkWindow *window) 
-{
-/*
-	init_xpm_d(&xpm_unknown, &xpm_unknown_mask, xpm_window, window, 
-		gnome_question_xpm);
-	init_xpm_d(&xpm_dvcr, &xpm_dvcr_mask, xpm_window, window,
-		gnome_qeye_xpm);
-	init_xpm_d(&xpm_disk, &xpm_disk_mask, xpm_window, window,
-		gtcd_xpm);
-	init_xpm_d(&xpm_cpu, &xpm_cpu_mask, xpm_window, window,
-		gnome_term_xpm);
-	init_xpm_d(&xpm_cpu_linux, &xpm_cpu_linux_mask, xpm_window, window,
-		gnome_term_linux_xpm);
-	init_xpm_d(&xpm_cpu_apple, &xpm_cpu_apple_mask, xpm_window, window,
-		gnome_term_apple_xpm);
-	init_xpm_d(&xpm_cpu_windows, &xpm_cpu_windows_mask, xpm_window, window,
-		gnome_term_windows_xpm);
-
-	xpm_window = window;
-*/
 	xpm_unknown = gdk_pixbuf_new_from_xpm_data(gnome_question_xpm);
 	xpm_dvcr = gdk_pixbuf_new_from_xpm_data(gnome_qeye_xpm);
 	xpm_disk = gdk_pixbuf_new_from_xpm_data(gtcd_xpm);
