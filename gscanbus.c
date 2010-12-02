@@ -50,7 +50,7 @@ TopologyTree *topologyTree;	/* Global for mouse click detection */
 GtkWidget *drawing_area;	/* Global for use by bus reset handler */
 int repaintCountdown = 0;
 
-static GdkPixmap *pixmap = NULL;
+//static GdkPixmap *pixmap = NULL;
 
 const char not_compatible[] = "\
 This libraw1394 does not work with your version of Linux. You need a different\
@@ -270,6 +270,8 @@ gint Repaint (gpointer data)
 	int width, height;
 	GdkDrawable *drawable;
 	GdkGC *gc;
+	GdkPixmap *pixmap = g_object_get_data(G_OBJECT(drawing_area), 
+			"back_pixmap");
 
 	nodeCount = raw1394_get_nodecount(handle);
 	topologyMap = raw1394GetTopologyMap(handle);
@@ -376,6 +378,8 @@ TopologyTree *detectClick(TopologyTree *node, int left, int width, int level,
  */
 static gint expose_event(GtkWidget *widget, GdkEventExpose *event) 
 {
+	GtkPixmap *pixmap = g_object_get_data(G_OBJECT(widget), 
+					"back_pixmap");
 	gdk_draw_drawable(widget->window,
 		widget->style->fg_gc[GTK_WIDGET_STATE(widget)],
 		GDK_DRAWABLE(pixmap),
@@ -394,14 +398,19 @@ static gint expose_event(GtkWidget *widget, GdkEventExpose *event)
  */
 static gint configure_event(GtkWidget *widget, GdkEventConfigure *event) 
 {
+	GdkDrawable *pixmap = g_object_get_data(G_OBJECT(widget), 
+					"back_pixmap");
+
 	if (pixmap) {
-		g_object_unref(pixmap);
+		gdk_drawable_unref(pixmap);
 	}
 
 	pixmap = gdk_pixmap_new(widget->window,
 		widget->allocation.width,
 		widget->allocation.height,
 		-1);
+
+	g_object_set_data(G_OBJECT(widget), "back_pixmap", pixmap);
 
 	Repaint((gpointer) drawing_area);
 
