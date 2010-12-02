@@ -19,6 +19,15 @@
 
 #include "icons.h"
 
+#include "gnome-question.xpm"
+#include "gnome-qeye.xpm"
+#include "gnome-term.xpm"
+#include "gnome-term-linux.xpm"
+#include "gnome-term-apple.xpm"
+#include "gnome-term-windows.xpm"
+#include "gtcd.xpm"
+#include "apple-green.xpm"
+
 GdkPixmap *xpm_unknown = NULL;
 GdkPixmap *xpm_dvcr = NULL;
 GdkPixmap *xpm_disk = NULL;
@@ -35,35 +44,8 @@ GdkBitmap *xpm_cpu_apple_mask;
 GdkBitmap *xpm_cpu_windows_mask;
 GdkWindow *xpm_window = NULL;
 
-int chooseIconVendor(Rom_info *, GdkBitmap **, GdkBitmap **, char **);
-int contains(char *, char *);
-
-#if 0
-/*
- * Initialize a GdkPixmap and corresponding mask from an xpm file. If the
- * pixmap was already loaded and the window has not changed, nothing is done.
- * If the pixmap was already loaded and the window has changed, the pixmap
- * will be reloaded.
- * IN:	xpm:		previously initialized pixmap if any
- *	xpm_mask:	previously initialized mask if any
- *	xpm_window:	the window previously used for pixmaps
- *	window:		the window to use now for pixmaps
- *	filename:	the filename of the xpm to load
- * OUT:	xpm:		the loaded pixmap
- *	xpm_mask:	the loaded mask
- */
-void init_xpm(GdkPixmap **xpm, GdkBitmap **xpm_mask, GdkWindow *xpm_window,
-	GdkWindow *window, char *filename) {
-	if (xpm_window != window) {
-		if (*xpm != NULL) gdk_pixmap_unref(*xpm);
-		if (*xpm_mask != NULL) gdk_bitmap_unref(*xpm_mask);
-	}
-	if (*xpm == NULL || xpm_window != window) {
-		*xpm = gdk_pixmap_create_from_xpm(
-			window, xpm_mask, NULL, filename);
-	}
-}
-#endif
+static int chooseIconVendor(Rom_info *, GdkBitmap **, GdkBitmap **, char **);
+static int contains(char *, char *);
 
 /*
  * Initialize a GdkPixmap and corresponding mask from xpm data. If the
@@ -78,8 +60,9 @@ void init_xpm(GdkPixmap **xpm, GdkBitmap **xpm_mask, GdkWindow *xpm_window,
  * OUT:	xpm:		the loaded pixmap
  *	xpm_mask:	the loaded mask
  */
-void init_xpm_d(GdkPixmap **xpm, GdkBitmap **xpm_mask, GdkWindow *xpm_window,
-	GdkWindow *window, char **xpm_data) {
+static void init_xpm_d(GdkPixmap **xpm, GdkBitmap **xpm_mask, GdkWindow *xpm_window,
+	GdkWindow *window, char **xpm_data) 
+{
 	if (xpm_window != window) {
 		if (*xpm != NULL) gdk_pixmap_unref(*xpm);
 		if (*xpm_mask != NULL) gdk_bitmap_unref(*xpm_mask);
